@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+    <include layout="@layout/toolbar_thankyou_activity"
+        android:id="@+id/thankyou_activity"></include>
+
+    <ImageView
+        android:id="@+id/iv22"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_below="@+id/thankyou_activity"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:src="@drawable/relax_icon"/>
+    <View
+        android:layout_below="@+id/iv22"
+        android:id="@+id/view1"
+         android:background="@color/grey"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"></View>
+    <TextView
+        android:id="@+id/tv1"
+        android:text="Thank You!"
+        android:textColor="@color/blue"
+        android:textSize="26sp"
+        android:layout_margin="10dp"
+        android:gravity="center_horizontal"
+        android:layout_below="@+id/view1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <TextView
+
+        android:padding="10dp"
+        android:textColor="@color/black"
+        android:id="@+id/tvThankyouText2"
+        android:gravity="center"
+        android:textSize="22sp"
+        android:text="@string/thankyou_string"
+        android:layout_below="@+id/tv1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <View
+        android:layout_below="@+id/tvThankyouText2"
+        android:id="@+id/view2"
+        android:layout_marginTop="10dp"
+        android:background="@color/grey"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"></View>
+     <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:weightSum="100">
+
+        <Button
+            android:id="@+id/ViewPrevious"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginRight="2dp"
+            android:layout_weight="50"
+            android:background="@drawable/buttons"
+            android:text="Previous Order"
+            android:textAllCaps="false"
+            android:textColor="@color/white" />
+
+        <Button
+            android:id="@+id/bBookAnother"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="2dp"
+            android:layout_weight="50"
+            android:background="@drawable/buttons"
+            android:text="Book Another"
+            android:textAllCaps="false"
+            android:textColor="@color/white" />
+    </LinearLayout>
+</RelativeLayout>

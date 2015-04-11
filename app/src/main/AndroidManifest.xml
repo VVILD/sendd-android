@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+
+    package="co.sendd">
+    <uses-feature  android:glEsVersion="0x00020000" android:required="true"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.CALL_PHONE"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <application
+        android:name="co.sendd.helper.App"
+        android:allowBackup="true"
+        android:icon="@drawable/logo_blue_white"
+        android:label="@string/app_name"
+        android:largeHeap="true"
+         android:theme="@style/AppTheme">
+        <activity
+            android:name="co.sendd.activity.Activity_SplashScreen"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/app_name"
+
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="co.sendd.activity.Activity_Main"
+            android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name="co.sendd.activity.Activity_ViewPager"
+            android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name="co.sendd.activity.Activity_Login"
+            android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name="co.sendd.activity.Activity_Signup"
+            android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"></activity>
+        <activity
+            android:name="co.sendd.activity.Activity_Add_New_Address_Receiver"
+            android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="co.sendd.activity.Activity_Address_Search_Receiver" />
+            </activity>
+        <activity
+            android:name="co.sendd.activity.Activity_Address_Search_Receiver"
+            android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="co.sendd.activity.Activity_Main" />
+
+        </activity>
+        <activity
+            android:name="co.sendd.activity.Activity_UpdateAddress"
+            android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="co.sendd.activity.Activity_Main" />
+
+        </activity>
+
+
+        <service android:name="co.sendd.helper.OTP_Check" />
+
+        <activity
+            android:name="co.sendd.activity.Activity_Shipping_Options"
+            android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="co.sendd.activity.Activity_Main" />
+        </activity>
+        <activity
+            android:name="co.sendd.activity.Activity_ThankYou"
+            android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait">
+         </activity>
+        <activity
+            android:name="co.sendd.activity.Activity_Shipment_details"
+            android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name="co.sendd.activity.Activity_Maps"
+            android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="co.sendd.activity.Activity_Main" />
+        </activity>
+        <meta-data android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+        <meta-data
+            android:name="com.google.android.maps.v2.API_KEY"
+            android:value="AIzaSyCKbLLVuhydlB6IIbOUVeI2vEOuxFxAdQI"/>
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="3509caf0656d54e96373b76877e6ed87251a17b1" />
+        <meta-data android:name="com.google.android.gms.version"
+        android:value="@integer/google_play_services_version" />
+    </application>
+</manifest>

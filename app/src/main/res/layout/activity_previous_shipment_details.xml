@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ll1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:descendantFocusability="blocksDescendants"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/Main_toolbar"
+        layout="@layout/toolbar_shippingitemdetail_activity" />
+
+    <ScrollView
+        android:id="@+id/scroll"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/Main_toolbar"
+        android:background="@color/white" >
+
+        <RelativeLayout
+            android:id="@+id/rl1111"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/Main_toolbar"
+            android:background="@color/white"
+            android:padding="20dp">
+
+            <ImageView
+                android:id="@+id/ivItem_Image_preview"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_centerHorizontal="true"
+                android:src="@drawable/box_sample_icon" />
+
+            <RelativeLayout
+                android:id="@+id/rlline1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/ivItem_Image_preview">
+
+                <ImageView
+                    android:id="@+id/ivusericon"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/user_icon" />
+
+                <TextView
+                    android:id="@+id/tvName"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:layout_toRightOf="@+id/ivusericon"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
+                    android:text=""
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_alignBottom="@+id/tvName"
+                    android:layout_marginLeft="10dp"
+                    android:layout_toRightOf="@+id/ivusericon"
+                    android:background="@color/grey" />
+            </RelativeLayout>
+
+
+            <RelativeLayout
+                android:id="@+id/rlline2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/rlline1"
+                android:layout_marginTop="5dp">
+
+                <ImageView
+                    android:id="@+id/ivlocationicon"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/address_icon" />
+
+                <TextView
+                    android:id="@+id/tvAddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="5dp"
+                    android:layout_toRightOf="@+id/ivlocationicon"
+                    android:gravity="center_vertical"
+                    android:minHeight="30dp"
+                    android:paddingLeft="10dp"
+                    android:text=""
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_below="@+id/tvAddress"
+                    android:layout_marginLeft="10dp"
+                    android:layout_toRightOf="@+id/ivlocationicon"
+                    android:background="@color/grey" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/rlline3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/rlline2"
+                android:layout_marginTop="5dp">
+
+                <ImageView
+                    android:id="@+id/ivtimeicon"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/clock_icon" />
+                <TextView
+                    android:id="@+id/tvTime"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:layout_marginBottom="5dp"
+                    android:layout_toRightOf="@+id/ivtimeicon"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
+                    android:text=" "
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_below="@+id/tvTime"
+                    android:layout_marginLeft="10dp"
+                    android:layout_toRightOf="@+id/ivtimeicon"
+                    android:background="@color/grey" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/rlline4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/rlline3"
+                android:layout_marginTop="5dp">
+
+                <ImageView
+                    android:id="@+id/ivrateicon"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/rupee_icon" />
+
+                <TextView
+                    android:id="@+id/tvRate"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:layout_marginBottom="5dp"
+                    android:layout_toRightOf="@+id/ivrateicon"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="10dp"
+                    android:text=""
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_below="@+id/tvRate"
+                    android:layout_marginLeft="10dp"
+                    android:layout_toRightOf="@+id/ivrateicon"
+                    android:background="@color/grey" />
+            </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/rlline5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/rlline4"
+                android:layout_marginTop="25dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="Shipment Details"
+                    android:textSize="20sp" />
+            </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/rlline6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/rlline5"
+                android:layout_marginTop="10dp">
+                <TextView
+                    android:id="@+id/tvDate"
+                    android:layout_width="100dp"
+                    android:layout_height="50dp"
+                    android:gravity="center"
+                    android:text="Date" />
+                <TextView
+                    android:id="@+id/tvStatus"
+                    android:layout_width="100dp"
+                    android:layout_height="50dp"
+                    android:layout_toRightOf="@+id/tvDate"
+                    android:gravity="center"
+                    android:text="Status" />
+                <TextView
+                    android:id="@+id/tvLocation"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:layout_toRightOf="@+id/tvStatus"
+                    android:gravity="center"
+                    android:text="Location" />
+            </RelativeLayout>
+            <ListView
+                android:id="@+id/ItemTrackingList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/rlline6"
+                android:minHeight="100dp"
+                android:gravity="center"
+                android:textSize="20sp" />
+        </RelativeLayout>
+    </ScrollView>
+</LinearLayout>

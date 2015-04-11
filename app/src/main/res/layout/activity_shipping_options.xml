@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <include
+        android:id="@+id/activity_shipping_options_toolbar"
+        layout="@layout/toolbar_shipping_options" />
+
+    <TextView
+        android:id="@+id/tv_shipping_option_one"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_below="@+id/activity_shipping_options_toolbar"
+        android:gravity="center"
+        android:text="SELECT YOUR SPEED"
+        android:textColor="@color/blue"
+        android:textSize="@dimen/TextSize18" />
+
+    <View
+        android:id="@+id/view_shipping_option_view"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_below="@+id/tv_shipping_option_one"
+        android:background="@color/grey"></View>
+
+    <RadioGroup
+        android:id="@+id/rgSphippingSpeed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/view_shipping_option_view"
+        android:layout_margin="15dp"
+        android:orientation="vertical">
+        <RadioButton
+            android:id="@+id/radio_premium"
+            android:layout_width="wrap_content"
+            android:checked="true"
+            android:layout_height="wrap_content"
+            android:text="Premium" />
+
+        <TextView
+            android:id="@+id/premiumdate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="33dp"
+            android:text=""
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="14sp" />
+        <RadioButton
+            android:id="@+id/radio_regular"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Standard" />
+
+        <TextView
+            android:id="@+id/economydate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/rgSphippingSpeed"
+            android:layout_marginLeft="33dp"
+            android:text=""
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="14sp" />
+
+        <RadioButton
+            android:id="@+id/radio_express"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Bulk (atleast 6 kgs)" />
+
+        <TextView
+            android:id="@+id/expressdate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/rgSphippingSpeed"
+            android:layout_marginLeft="33dp"
+            android:text=""
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textSize="14sp" />
+
+
+    </RadioGroup>
+    <Button
+        android:id="@+id/Continue"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+         android:background="@drawable/buttons"
+        android:text="Continue"
+        android:textColor="@color/white"
+        android:layout_below="@+id/rgSphippingSpeed"
+        android:layout_centerHorizontal="true" />
+    <Button
+        android:id="@+id/getEstimate"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/buttons"
+        android:text="Get Estimate (Optional)"
+        android:textColor="@color/white" />
+
+    <TextView
+        android:id="@+id/tvcostPremimum"
+        android:layout_width="80dp"
+        android:layout_height="20dp"
+        android:layout_gravity="right"
+        android:gravity="right"
+        android:visibility="invisible"
+        android:layout_marginRight="10dp"
+        android:layout_alignTop="@+id/rgSphippingSpeed"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="30dp"
+        android:text="20,000"/>
+
+    <TextView
+        android:id="@+id/tvcostEconomy"
+        android:layout_width="80dp"
+        android:layout_height="20dp"
+        android:layout_gravity="right"
+        android:gravity="right"
+        android:visibility="invisible"
+        android:layout_marginRight="10dp"
+        android:layout_alignTop="@+id/rgSphippingSpeed"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="80dp"
+        android:text="20,000"/>
+
+    <TextView
+        android:id="@+id/tvcostExpress"
+        android:layout_width="80dp"
+        android:layout_height="20dp"
+        android:layout_gravity="right"
+        android:visibility="invisible"
+        android:gravity="right"
+        android:layout_marginRight="10dp"
+        android:layout_alignTop="@+id/rgSphippingSpeed"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="130dp"
+        android:text="20,000"/>
+
+</RelativeLayout>

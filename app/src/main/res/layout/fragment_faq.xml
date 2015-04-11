@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_margin="20dp"
+    android:background="@android:color/white"
+    android:orientation="vertical">
+<ImageView
+    android:layout_width="100dp"
+    android:layout_height="100dp"
+    android:src="@drawable/faq_icon"
+    android:layout_gravity="center_horizontal" />
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:textSize="20sp"
+        android:textColor="@color/black"
+        android:gravity="center"
+        android:text="Frequently Asked Questions"/>
+    <co.sendd.helper.AnimatedExpandableListView
+        android:id="@+id/lvExp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:childDivider="#00000000"
+        android:divider="#00000000"
+        android:dividerHeight="0dp" />
+
+</LinearLayout>

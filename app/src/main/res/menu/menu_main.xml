@@ -1,0 +1,9 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+   >
+    <item android:id="@+id/action_Locator"
+        android:title="Pickup Location"
+        android:icon="@drawable/locator_icon"
+        app:showAsAction="always" />
+</menu>

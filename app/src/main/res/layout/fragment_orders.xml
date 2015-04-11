@@ -1,0 +1,85 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:animateLayoutChanges="true">
+<RelativeLayout
+    android:id="@+id/setlocationrl"
+    android:layout_width="match_parent"
+    android:layout_height="40dp">
+    <TextView
+        android:textColor="@color/black"
+        android:text="Set your pickup location "
+        android:layout_width="match_parent"
+        android:gravity="right"
+        android:layout_toLeftOf="@+id/upicon"
+        android:textSize="18sp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="4dp" />
+    <ImageView
+        android:id="@+id/upicon"
+        android:layout_alignParentRight="true"
+        android:layout_width="30dp"
+        android:layout_marginRight="15dp"
+        android:layout_height="30dp"
+        android:src="@drawable/uparrow_icon"/>
+    </RelativeLayout>
+    <Button
+        android:drawableRight="@drawable/add_plus_white_icon"
+        android:id="@+id/bFragment_Orders_AddShipment"
+        android:layout_width="250dp"
+        android:paddingRight="20dp"
+        android:layout_height="50dp"
+        android:textSize="20sp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="45dp"
+        android:background="@drawable/buttons"
+        android:text="ADD SHIPMENTS"
+        android:textColor="@color/white" />
+
+    <ListView
+        android:id="@+id/lvFragment_Orders_Items_List"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/bFragment_Orders_AddShipment"
+        android:layout_marginBottom="60dp"
+        android:layout_marginTop="20dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:orientation="horizontal"
+        android:weightSum="100">
+
+        <Button
+            android:id="@+id/bFragment_Orders_PickNow"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginEnd="1dp"
+            android:layout_marginRight="1dp"
+            android:layout_weight="50"
+            android:background="@drawable/buttons"
+            android:text="Pickup Now"
+            android:textColor="@color/white" />
+
+        <Button
+            android:id="@+id/bFragment_Orders_PickLater"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginLeft="1dp"
+            android:layout_marginStart="1dp"
+            android:layout_weight="50"
+            android:background="@drawable/buttons"
+            android:text="Pickup Later"
+            android:textColor="@color/white" />
+    </LinearLayout>
+
+</RelativeLayout>

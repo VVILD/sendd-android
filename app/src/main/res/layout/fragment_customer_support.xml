@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical"
+    android:padding="20dp">
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:src="@drawable/customer_support_icon"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:id="@+id/tvfragment_customer_support_Title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="84dp"
+        android:text="Is there any thing you want to share with us?"
+        android:textColor="@color/black" />
+
+    <LinearLayout
+        android:id="@+id/ll_one_fragment_customer_support"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvfragment_customer_support_Title"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/boxborder"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Feedback, comments,\nsuggestions or compliments -\n do write to"
+            android:textSize="@dimen/TextSize18" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/mail_icon_small"
+            android:drawableStart="@drawable/mail_icon_small"
+            android:gravity="center"
+            android:paddingLeft="20dp"
+            android:paddingRight="20dp"
+            android:text="help@sendd.co"
+            android:textColor="@color/blue"
+            android:textSize="@dimen/TextSize16" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_two_fragment_customer_support"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ll_one_fragment_customer_support"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/boxborder"
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Need more help! For any assistance, contact"
+            android:textSize="@dimen/TextSize18" />
+
+        <TextView
+            android:id="@+id/callphone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/phone_icon_small"
+            android:drawableStart="@drawable/phone_icon_small"
+            android:gravity="center"
+            android:text="918080028081"
+            android:paddingLeft="20dp"
+            android:clickable="true"
+            android:paddingRight="20dp"
+            android:textColor="@color/blue"
+            android:textSize="@dimen/TextSize18" />
+    </LinearLayout>
+
+</RelativeLayout>

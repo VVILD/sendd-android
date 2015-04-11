@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/rlline6"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rlline5"
+        android:layout_marginTop="25dp">
+
+        <TextView
+            android:gravity="center"
+            android:id="@+id/tvDate1"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:text="Date"/>
+        <TextView
+            android:id="@+id/tvStatus1"
+            android:gravity="center"
+            android:layout_toRightOf="@+id/tvDate1"
+            android:layout_width="100dp"
+            android:layout_height="50dp"
+            android:text="Status"/>
+        <TextView
+            android:gravity="center"
+            android:id="@+id/tvLocation1"
+            android:layout_toRightOf="@+id/tvStatus1"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:text="Location"/>
+    </RelativeLayout>

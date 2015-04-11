@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:descendantFocusability="blocksDescendants"
+    android:layout_gravity="center_vertical"
+    android:padding="10dp">
+
+    <CheckBox
+        android:id="@+id/ivList_item_Address_RightCheck"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:clickable="false"
+        android:focusable="false"
+        android:button="@drawable/customcheckbox" />
+
+    <TextView
+        android:id="@+id/tvList_Item_Address_Name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="15dp"
+        android:layout_marginStart="15dp"
+        android:layout_toEndOf="@+id/ivList_item_Address_RightCheck"
+        android:layout_toRightOf="@+id/ivList_item_Address_RightCheck"
+        android:text="Name"
+        android:textSize="@dimen/TextSize20" />
+
+    <TextView
+        android:id="@+id/ivList_item_Address_AddressLine"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tvList_Item_Address_Name"
+        android:layout_marginLeft="15dp"
+        android:layout_marginStart="15dp"
+        android:layout_toEndOf="@+id/ivList_item_Address_RightCheck"
+        android:layout_toRightOf="@+id/ivList_item_Address_RightCheck"
+        android:text="Address Line 1"
+        android:textSize="@dimen/TextSize14" />
+</RelativeLayout>
