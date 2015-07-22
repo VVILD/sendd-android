@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:id="@+id/rl11111"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+
+        android:orientation="vertical">
+
+        <RadioGroup
+            android:id="@+id/radioGroup1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <RadioButton
+                android:id="@+id/radioToday"
+                android:layout_width="140dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/radio_buttonselector"
+                android:button="@null"
+                android:checked="true"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="Today"
+                android:textColor="@drawable/radio_buttontextselector" />
+
+            <RadioButton
+                android:id="@+id/radioTomorrow"
+                android:layout_width="140dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/radio_buttonselector"
+                android:button="@null"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="Tomorrow"
+                android:textColor="@drawable/radio_buttontextselector" />
+
+            <RadioButton
+                android:id="@+id/radioDayAfter"
+                android:layout_width="140dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/radio_buttonselector"
+                android:button="@null"
+                android:gravity="center"
+                android:padding="10dp"
+                android:text="Day After"
+                android:textColor="@drawable/radio_buttontextselector" />
+        </RadioGroup>
+
+
+        <NumberPicker
+            android:id="@+id/timeslots"
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/radioGroup1" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rl11111"
+        android:weightSum="100">
+
+        <Button
+            android:id="@+id/Cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/rl11111"
+            android:layout_marginRight="1dp"
+            android:layout_weight="51"
+            android:background="@drawable/buttons"
+            android:text="Cancel"
+            android:textColor="@color/white" />
+
+        <Button
+            android:id="@+id/Submit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="1dp"
+            android:layout_toRightOf="@+id/Cancel"
+            android:layout_weight="51"
+            android:background="@drawable/buttons"
+            android:text="Submit"
+            android:textColor="@color/white" />
+    </LinearLayout>
+
+</RelativeLayout>

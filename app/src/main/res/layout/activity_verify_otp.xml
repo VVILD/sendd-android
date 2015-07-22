@@ -1,0 +1,97 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    android:background="@color/white">
+
+
+    <RelativeLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:animateLayoutChanges="true">
+
+        <include
+            android:id="@+id/verifytoolbar"
+            layout="@layout/toolbar_verify" />
+
+        <RelativeLayout
+            android:id="@+id/rlWait"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/verifytoolbar"
+            android:layout_gravity="center"
+            android:padding="16dp">
+
+            <ProgressBar
+                android:id="@+id/progressBar1"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center_vertical|center_horizontal|center"
+                android:layout_marginRight="16dp" />
+
+            <TextView
+                android:id="@+id/tvtext1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/progressBar1"
+                android:layout_toRightOf="@+id/progressBar1"
+                android:text="Waiting to automatically detect an SMS sent to:" />
+
+
+            <TextView
+                android:id="@+id/tvPhone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tvtext1"
+                android:layout_toRightOf="@+id/progressBar1"
+                android:text="9999999999"
+                android:textSize="16dp" />
+        </RelativeLayout>
+
+        <EditText
+            android:id="@+id/otp_edit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/rlWait"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/border"
+            android:drawableLeft="@drawable/phone_icon_small"
+            android:gravity="center_vertical"
+            android:hint="Verifying..."
+            android:inputType="number"
+            android:padding="4dp"
+            android:textSize="16sp" />
+
+        <Button
+            android:id="@+id/bregister"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/otp_edit"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/buttons"
+            android:paddingBottom="8dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingTop="8dp"
+            android:text="Register"
+            android:textColor="@android:color/white" />
+
+
+        <RelativeLayout
+            android:id="@+id/otp_hint_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/bregister"
+            android:layout_marginTop="16dp">
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+
+</FrameLayout>
