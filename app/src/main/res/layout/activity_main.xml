@@ -3,34 +3,32 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:background="@drawable/bg_final">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <ImageView
+
+            android:id="@+id/clickhere"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true" />
+
         <include
             android:id="@+id/Main_toolbar"
             layout="@layout/toolbar_main_activity" />
-
         <FrameLayout
             android:id="@+id/frame_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/Main_toolbar">
-
-            <TextView
-                android:id="@+id/noshiptv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="No Shipments Added Yet"
-                android:textSize="22sp" />
-        </FrameLayout>
-
+            android:layout_below="@id/Main_toolbar" />
     </RelativeLayout>
 
     <ListView
+
         android:id="@+id/list_slidermenu"
         android:layout_width="240dp"
         android:layout_height="match_parent"

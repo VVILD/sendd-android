@@ -7,12 +7,63 @@ import java.util.Date;
  */
 public class Orders {
 
+
     private String address;
     private String cancelled;
     private String flat_no;
     private Double latitude;
     private Double longitude;
     private String pincode;
+    private String name;
+    private String email;
+    private String pick_now;
+    private String code;
+    private String user;
+    private Date date;
+    private String time;
+    private String pickup_flat_no;
+    private String pickup_locality;
+    private String pickup_city;
+    private String pickup_state;
+    private String pickup_country;
+    private String pickup_pincode;
+    private String status;
+    private String cost;
+    private String paid;
+    private String order_no;
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getPick_now() {
+        return pick_now;
+    }
+
+    public void setPick_now(String pick_now) {
+        this.pick_now = pick_now;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getName() {
+
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public String getAddress() {
         return address;
@@ -62,19 +113,6 @@ public class Orders {
         this.pincode = pincode;
     }
 
-    private String user;
-    private Date date;
-    private String time;
-    private String pickup_flat_no;
-    private String pickup_locality;
-    private String pickup_city;
-    private String pickup_state;
-    private String pickup_country;
-    private String pickup_pincode;
-    private String status;
-    private String cost;
-    private String paid;
-    private String order_no;
 
     public String getUser() {
         return user;

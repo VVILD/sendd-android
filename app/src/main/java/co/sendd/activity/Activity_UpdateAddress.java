@@ -1,11 +1,12 @@
 package co.sendd.activity;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -15,30 +16,23 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import co.sendd.gettersandsetters.ItemList;
 import co.sendd.R;
 import co.sendd.databases.Db_Address_Receiver;
 import co.sendd.databases.Db_Item_List;
 import co.sendd.gettersandsetters.Address;
+import co.sendd.gettersandsetters.ItemList;
 
-import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 /**
  * Created by Kuku on 19/02/15.
  */
-public class Activity_UpdateAddress extends ActionBarActivity {
- 
-    private Button SaveAddress;
-    private EditText etReceiverName, etReceiverFlatno, etReceiverNumber, etReceiverCountry, etReceiverLocality, etReceiverCity, etReceiverState;
-    int id;
+public class Activity_UpdateAddress extends ActionBarActivity implements TextWatcher {
+
     String[] pincodes;
     AutoCompleteTextView etReceiverPincode;
     boolean matched;
-
-    @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(new CalligraphyContextWrapper(newBase));
-    }
+    private Button SaveAddress;
+    private EditText etReceiverName, etReceiverFlatno, etReceiverNumber, etReceiverCountry, etReceiverLocality, etReceiverCity, etReceiverState;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,14 +45,23 @@ public class Activity_UpdateAddress extends ActionBarActivity {
                 (this, android.R.layout.simple_list_item_1, pincodes);
 
         etReceiverName = (EditText) findViewById(R.id.etactivity_update_address_receiver_Name);
+        etReceiverName.addTextChangedListener(this);
         etReceiverFlatno = (EditText) findViewById(R.id.etactivity_update_address_receiver_flatno);
+        etReceiverFlatno.addTextChangedListener(this);
         etReceiverNumber = (EditText) findViewById(R.id.etactivity_update_address_receiver_Phone);
+        etReceiverNumber.addTextChangedListener(this);
         etReceiverCountry = (EditText) findViewById(R.id.etactivity_update_address_Country);
+        etReceiverCountry.addTextChangedListener(this);
         etReceiverLocality = (EditText) findViewById(R.id.etactivity_update_address_Locality);
+        etReceiverLocality.addTextChangedListener(this);
         etReceiverCity = (EditText) findViewById(R.id.etactivity_update_address_City);
+        etReceiverCity.addTextChangedListener(this);
         etReceiverState = (EditText) findViewById(R.id.etactivity_update_address_State);
+        etReceiverState.addTextChangedListener(this);
         etReceiverPincode = (AutoCompleteTextView) findViewById(R.id.etactivity_update_address_Pincode);
         etReceiverPincode.setAdapter(adapter);
+        etReceiverPincode.addTextChangedListener(this);
+
 
         if (getIntent() != null) {
             etReceiverName.setText(getIntent().getStringExtra("U_Name"));
@@ -69,97 +72,8 @@ public class Activity_UpdateAddress extends ActionBarActivity {
             etReceiverCity.setText(getIntent().getStringExtra("u_City"));
             etReceiverPincode.setText(getIntent().getStringExtra("U_Pincode"));
             etReceiverState.setText(getIntent().getStringExtra("U_State"));
-            id=getIntent().getExtras().getInt("ID");
 
         }
-        etReceiverName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    //do job here owhen Edittext lose focus
-                    if (!TextUtils.isEmpty(etReceiverName.getText().toString())) {
-                        etReceiverName.setError(null);
-                    }
-                }
-            }
-        });
-        etReceiverFlatno.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    //do job here owhen Edittext lose focus
-                    if (!TextUtils.isEmpty(etReceiverFlatno.getText().toString())) {
-                        etReceiverFlatno.setError(null);
-                    }
-                }
-            }
-        });
-        etReceiverNumber.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    //do job here owhen Edittext lose focus
-                    if (!TextUtils.isEmpty(etReceiverNumber.getText().toString())) {
-                        etReceiverNumber.setError(null);
-                    }
-                }
-            }
-        });
-        etReceiverCountry.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    //do job here owhen Edittext lose focus
-                    if (!TextUtils.isEmpty(etReceiverCountry.getText().toString())) {
-                        etReceiverCountry.setError(null);
-                    }
-                }
-            }
-        });
-        etReceiverLocality.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    //do job here owhen Edittext lose focus
-                    if (!TextUtils.isEmpty(etReceiverLocality.getText().toString())) {
-                        etReceiverLocality.setError(null);
-                    }
-                }
-            }
-        });
-        etReceiverCity.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    //do job here owhen Edittext lose focus
-                    if (!TextUtils.isEmpty(etReceiverCity.getText().toString())) {
-                        etReceiverCity.setError(null);
-                    }
-                }
-            }
-        });
-        etReceiverState.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    //do job here owhen Edittext lose focus
-                    if (!TextUtils.isEmpty(etReceiverState.getText().toString())) {
-                        etReceiverState.setError(null);
-                    }
-                }
-            }
-        });
-        etReceiverPincode.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (!hasFocus) {
-                    //do job here owhen Edittext lose focus
-                    if (!TextUtils.isEmpty(etReceiverPincode.getText().toString())) {
-                        etReceiverPincode.setError(null);
-                    }
-                }
-            }
-        });
         Toolbar toolbar = (Toolbar) findViewById(R.id.activity_update_address_receiver_toolbar);
         setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(R.drawable.arrow_back_icon_small);
@@ -177,7 +91,8 @@ public class Activity_UpdateAddress extends ActionBarActivity {
             public void onClick(View v) {
                 if (!TextUtils.isEmpty(etReceiverName.getText().toString())) {
                     if (!TextUtils.isEmpty(etReceiverNumber.getText().toString())) {
-                        if (!TextUtils.isEmpty(etReceiverCountry.getText().toString())) {
+                        if (etReceiverNumber.getText().length() == 10) {
+                            if (!TextUtils.isEmpty(etReceiverCountry.getText().toString())) {
                             if (!TextUtils.isEmpty(etReceiverLocality.getText().toString())) {
                                 if (!TextUtils.isEmpty(etReceiverFlatno.getText().toString())) {
                                     if (!TextUtils.isEmpty(etReceiverCity.getText().toString())) {
@@ -241,6 +156,9 @@ public class Activity_UpdateAddress extends ActionBarActivity {
                         } else {
                             etReceiverCountry.setError("* Country is required");
                         }
+                        } else {
+                            etReceiverNumber.setError("* Enter your 10 digit Mobile number");
+                        }
                     } else {
                         etReceiverNumber.setError("* Number is required");
                     }
@@ -259,4 +177,28 @@ public class Activity_UpdateAddress extends ActionBarActivity {
         Activity_UpdateAddress.this.overridePendingTransition(R.animator.pull_in_left, R.animator.push_out_right);
     }
 
+    @Override
+    public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+    }
+
+    @Override
+    public void onTextChanged(CharSequence s, int start, int before, int count) {
+        if (!etReceiverName.getText().toString().isEmpty()) etReceiverName.setError(null, null);
+        if (!etReceiverFlatno.getText().toString().isEmpty()) etReceiverFlatno.setError(null, null);
+        if (!etReceiverNumber.getText().toString().isEmpty()) etReceiverNumber.setError(null, null);
+        if (!etReceiverLocality.getText().toString().isEmpty())
+            etReceiverLocality.setError(null, null);
+        if (!etReceiverCity.getText().toString().isEmpty()) etReceiverCity.setError(null, null);
+        if (!etReceiverState.getText().toString().isEmpty()) etReceiverState.setError(null, null);
+        if (!etReceiverPincode.getText().toString().isEmpty())
+            etReceiverPincode.setError(null, null);
+        if (!etReceiverCountry.getText().toString().isEmpty())
+            etReceiverCountry.setError(null, null);
+    }
+
+    @Override
+    public void afterTextChanged(Editable s) {
+
+    }
 }

@@ -6,11 +6,12 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.view.inputmethod.InputMethodManager;
 
+
 /**
  * Created by Kuku on 11/02/15.
  */
 public class Utils extends Activity{
-     private String TAG="co.sendd.helper";
+
     SharedPreferences sharedpreferences;
     Context context;
 
@@ -40,6 +41,18 @@ public class Utils extends Activity{
         editor.putInt("OrderId", 0);
         editor.apply();
     }
+
+    public void Sync() {
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+        editor.putInt("Synced", 1);
+        editor.apply();
+    }
+
+    public void UnSync() {
+        SharedPreferences.Editor editor = sharedpreferences.edit();
+        editor.putInt("Synced", 0);
+        editor.apply();
+    }
     public void UnRegistered( ){
         SharedPreferences.Editor  editor = sharedpreferences.edit();
         editor.putInt("Registered", 0);
@@ -53,9 +66,18 @@ public class Utils extends Activity{
             return false;
         }
     }
+
+    public boolean isSynced() {
+        int check = sharedpreferences.getInt("Synced", 0);
+        if (check == 1) {
+            return true;
+        } else {
+            return false;
+        }
+    }
     public boolean setvalue(String keyname,String value){
         SharedPreferences.Editor editor=sharedpreferences.edit();
-        editor.putString(keyname,value);
+        editor.putString(keyname, value);
         editor.apply();
         return true;
     }
@@ -66,7 +88,8 @@ public class Utils extends Activity{
         return true;
     }
     public String getvalue(String keyname){
-        return sharedpreferences.getString(keyname,null);
+
+        return sharedpreferences.getString(keyname, "");
     }
 
     public void clear()
@@ -75,4 +98,6 @@ public class Utils extends Activity{
         editor.clear();
         editor.commit();
     }
+
+
 }

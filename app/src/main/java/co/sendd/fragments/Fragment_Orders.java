@@ -1,6 +1,7 @@
 package co.sendd.fragments;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -10,6 +11,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
@@ -30,16 +32,39 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.NumberPicker;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.github.jjobes.slidedatetimepicker.SlideDateTimeListener;
-import com.github.jjobes.slidedatetimepicker.SlideDateTimePicker;
+import com.nostra13.universalimageloader.core.DisplayImageOptions;
+import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.wizrocket.android.sdk.WizRocketAPI;
+import com.wizrocket.android.sdk.exceptions.WizRocketMetaDataNotFoundException;
+import com.wizrocket.android.sdk.exceptions.WizRocketPermissionsNotSatisfied;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
+import java.util.Locale;
+
+import co.sendd.R;
 import co.sendd.activity.Activity_Address_Search_Receiver;
 import co.sendd.activity.Activity_Main;
-import co.sendd.activity.Activity_Maps;
+import co.sendd.activity.Activity_Pickup_Address;
+import co.sendd.activity.Activity_Reigister_Phone;
 import co.sendd.activity.Activity_Shipping_Options;
 import co.sendd.activity.Activity_ThankYou;
 import co.sendd.activity.Activity_UpdateAddress;
@@ -48,27 +73,11 @@ import co.sendd.databases.Db_Item_List;
 import co.sendd.gettersandsetters.CompleteOrder;
 import co.sendd.gettersandsetters.ItemList;
 import co.sendd.gettersandsetters.Orders;
+import co.sendd.gettersandsetters.Promo;
 import co.sendd.gettersandsetters.Shipment;
 import co.sendd.helper.NetworkUtils;
+import co.sendd.helper.SaveImageService;
 import co.sendd.helper.Utils;
-import co.sendd.R;
-import com.nostra13.universalimageloader.core.DisplayImageOptions;
-import com.nostra13.universalimageloader.core.ImageLoader;
-import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
-
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -78,117 +87,812 @@ import retrofit.mime.TypedFile;
  * Created by Kuku on 12/02/15.
  */
 public class Fragment_Orders extends Fragment {
+    private static final int CAMERA_CAPTURE_IMAGE_REQUEST_CODE = 101;
+    private static final int CAMERA_CAPTURE_IMAGE_REQUEST_CODE_New_Image = 100;
+    private static final int MEDIA_TYPE_IMAGE = 1;
+    public static TextView noShipmentTv, tvErrorMsg, etPromocode, tvPromomessage;
+    private static Uri fileUri, fileUri_NewImage;
+    LinearLayout rlPromoCode;
+    Date PickupLaterDate;
+    String PickupLaterTime;
+    ImageView crossicon;
+    Calendar c;
+    DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
+            .cacheInMemory(true)
+            .cacheOnDisk(true)
+            .build();
+    ImageLoaderConfiguration config;
+    private WizRocketAPI wr;
     private ListView lv_ItemCart;
     private OrderList_Adapter madapter;
     private ArrayList<ItemList> Item_list;
     private ProgressDialog pd;
-    private static
-    Uri fileUri;
-    private static final int CAMERA_CAPTURE_IMAGE_REQUEST_CODE = 100;
-    public static final int MEDIA_TYPE_IMAGE = 1;
     private Utils utils;
-    RelativeLayout rl;
+    private RadioGroup radioGroup1;
+    private RelativeLayout rl;
+    private LinearLayout bottomButtons;
+    private NumberPicker PickLater_Date;
+    private Date mDate;
+    private Button pickupNow, pickupLater;
+
+    //Create a File
+    private static File getOutputMediaFile(int type) {
+
+        // Create SD card Location
+        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "Sendd");
+
+        // Create the storage directory if it does not exist
+        if (!mediaStorageDir.exists()) {
+            if (!mediaStorageDir.mkdirs()) {
+                return null;
+            }
+        }
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+        File mediaFile;
+        if (type == MEDIA_TYPE_IMAGE) {
+            mediaFile = new File(mediaStorageDir.getPath() + File.separator + "IMG_" + timeStamp + ".jpeg");
+        } else {
+            return null;
+        }
+        return mediaFile;
+    }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
         outState.putParcelable("file_uri", fileUri);
+        outState.putParcelable("fileUri_NewImage", fileUri_NewImage);
+        super.onSaveInstanceState(outState);
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        try {
+            wr = WizRocketAPI.getInstance(getActivity().getApplicationContext());
+        } catch (WizRocketMetaDataNotFoundException | WizRocketPermissionsNotSatisfied e) {
 
+        }
+        if (savedInstanceState != null) {
+            fileUri = savedInstanceState.getParcelable("file_uri");
+            fileUri_NewImage = savedInstanceState.getParcelable("fileUri_NewImage");
+        }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return getActivity().getLayoutInflater().inflate(R.layout.fragment_orders, container, false);
-
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        wr.activityResumed(getActivity());
         madapter = new OrderList_Adapter(getActivity(), R.layout.list_item_shipmentitem, ShowItemList());
         lv_ItemCart.setAdapter(madapter);
         if (madapter.getCount() > 0) {
-            Activity_Main.noShipmentTv.setVisibility(View.INVISIBLE);
+            bottomButtons.setVisibility(View.VISIBLE);
+            noShipmentTv.setVisibility(View.INVISIBLE);
+            rlPromoCode.setVisibility(View.VISIBLE);
+
         } else {
-            Activity_Main.noShipmentTv.setVisibility(View.VISIBLE);
+            rlPromoCode.setVisibility(View.INVISIBLE);
+            bottomButtons.setVisibility(View.INVISIBLE);
+            noShipmentTv.setVisibility(View.VISIBLE);
         }
         utils = new Utils(getActivity());
-        if (utils.getvalue("PickupAddress") == null) {
+        if (utils.getvalue("PickupAddress").equals("")) {
             ((Activity_Main) getActivity()).setActionBarTitle("Sendd");
         } else {
             rl.setVisibility(View.GONE);
             ((Activity_Main) getActivity()).setActionBarTitle(utils.getvalue("PickupFlatNo") + ", " + utils.getvalue("PickupAddress"));
         }
+        if (utils.getvalue("coupon_code_msg").equals("")) {
+            crossicon.setVisibility(View.GONE);
+            tvPromomessage.setText("Do you have a Promocode?");
+            tvPromomessage.setTextColor(Color.BLACK);
+            rlPromoCode.setEnabled(true);
+        } else {
+            tvPromomessage.setText(utils.getvalue("coupon_code_msg"));
+            tvPromomessage.setTextColor(Color.parseColor("#00aa00"));
+            rlPromoCode.setEnabled(false);
+            crossicon.setVisibility(View.VISIBLE);
+        }
+        if (!ImageLoader.getInstance().isInited())
+            ImageLoader.getInstance().init(config);
     }
 
-    private SlideDateTimeListener listener = new SlideDateTimeListener() {
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        setHasOptionsMenu(true);
+        mDate = new Date();
+        config = new ImageLoaderConfiguration.Builder(getActivity()).defaultDisplayImageOptions(defaultOptions).build();
+        c = Calendar.getInstance();
+        rl = (RelativeLayout) view.findViewById(R.id.setlocationrl);
+        rlPromoCode = (LinearLayout) view.findViewById(R.id.rlPromoCode);
+        tvPromomessage = (TextView) view.findViewById(R.id.tvPromomessage);
+        crossicon = (ImageView) view.findViewById(R.id.crossicon);
+        crossicon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                crossicon.setVisibility(View.GONE);
+                tvPromomessage.setText("Do you have a Promocode?");
+                tvPromomessage.setTextColor(Color.BLACK);
+                rlPromoCode.setEnabled(true);
+                utils.setvalue("coupon_code_msg", "");
+                utils.setvalue("coupon_code", "");
 
-        @Override
-        public void onDateTimeSet(final Date date) {
 
-            if (!(date.getHours() < 10) && !(date.getHours() > 18)) {
-                Log.i("asdfasdf", String.valueOf(date.getHours()));
-                int hour = date.getHours();
-                int minute = date.getMinutes();
-                final String Time1 = String.valueOf(hour) + ":" + String.valueOf(minute) + ":00";
+            }
+        });
+        rlPromoCode.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!utils.isRegisterd()) {
+                    Intent i = new Intent(getActivity(), Activity_Reigister_Phone.class);
+                    i.putExtra("Login", true);
+                    getActivity().startActivity(i);
+                    getActivity().overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
+                } else {
+                    final Dialog dialog = new Dialog(getActivity());
+                    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                    dialog.getWindow().setBackgroundDrawable((new ColorDrawable(android.graphics.Color.TRANSPARENT)));
+                    dialog.setContentView(R.layout.dialog_promo);
+                    dialog.show();
+                    tvErrorMsg = (TextView) dialog.findViewById(R.id.tvErrorMsg);
+                    etPromocode = (TextView) dialog.findViewById(R.id.etPromocode);
+                    LinearLayout Cancel = (LinearLayout) dialog.findViewById(R.id.Cancel);
+                    LinearLayout Submit = (LinearLayout) dialog.findViewById(R.id.apply);
+                    radioGroup1 = (RadioGroup) dialog.findViewById(R.id.radioGroup1);
+                    Cancel.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.dismiss();
+                        }
+                    });
+                    Submit.setOnClickListener(
+                            new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    pd = new ProgressDialog(getActivity());
+                                    pd.setMessage("Verifying Promo Code, Please wait.");
+                                    pd.setCancelable(false);
+                                    pd.setIndeterminate(true);
+                                    pd.show();
+                                    if (!etPromocode.getText().toString().isEmpty()) {
+                                        final NetworkUtils mnetworkutils = new NetworkUtils(getActivity());
+                                        Promo mPromo = new Promo();
+                                        mPromo.setPhone(utils.getvalue("RegisteredPhone"));
+                                        mPromo.setCode(etPromocode.getText().toString());
+                                        if (mnetworkutils.isnetconnected()) {
+                                            //VERIFY OTP
+                                            mnetworkutils.getapi().checkPromo(mPromo, new Callback<Promo>() {
+                                                @Override
+                                                public void success(Promo promo, Response response) {
+                                                    pd.dismiss();
+                                                    if (promo.getValid().equals("N")) {
+                                                        tvErrorMsg.setText(promo.getPromomsg());
+                                                    }
+                                                    if (promo.getValid().equals("Y")) {
+                                                        dialog.dismiss();
+                                                        tvPromomessage.setText(promo.getPromomsg());
+                                                        tvPromomessage.setTextColor(Color.parseColor("#00aa00"));
+                                                        rlPromoCode.setEnabled(false);
+                                                        crossicon.setVisibility(View.VISIBLE);
+                                                        utils.setvalue("coupon_code_msg", promo.getPromomsg());
+                                                        utils.setvalue("coupon_code", etPromocode.getText().toString());
+                                                    }
+                                                }
 
-                pd = new ProgressDialog(getActivity());
-                pd.setMessage("Loading, Please wait....");
-                pd.setCancelable(false);
-                pd.setIndeterminate(true);
+                                                @Override
+                                                public void failure(RetrofitError error) {
+                                                    pd.dismiss();
+                                                }
+                                            });
+                                        } else {
+                                            Toast.makeText(getActivity(), "Not connected to network", Toast.LENGTH_SHORT).show();
+                                            pd.dismiss();
+                                        }
+                                    } else {
+                                        Toast.makeText(getActivity(), "Please enter a verification code", Toast.LENGTH_SHORT).show();
+                                        pd.dismiss();
+                                    }
+                                }
+                            }
+                    );
+                }
+            }
+        });
+
+        bottomButtons = (LinearLayout) view.findViewById(R.id.bottomButtons);
+        Activity_Main.exit = true;
+        noShipmentTv = (TextView) view.findViewById(R.id.noshiptv);
+        utils = new Utils(getActivity());
+        if (utils.getvalue("PickupAddress").equals("")) {
+            ((Activity_Main) getActivity()).setActionBarTitle("Sendd");
+        } else {
+            ((Activity_Main) getActivity()).setActionBarTitle(utils.getvalue("PickupFlatNo") + ", " + utils.getvalue("PickupAddress"));
+            rl.setVisibility(View.GONE);
+        }
+        ((Activity_Main) getActivity()).showActionBar();
+
+        if (!ImageLoader.getInstance().isInited())
+            ImageLoader.getInstance().init(config);
+
+
+        pickupNow = (Button) view.findViewById(R.id.bFragment_Orders_PickNow);
+        pickupLater = (Button) view.findViewById(R.id.bFragment_Orders_PickLater);
+
+        pickupNow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                wr.event.push("PickUp now Clicked");
                 final NetworkUtils mnetworkutils = new NetworkUtils(getActivity());
+                Date d = Calendar.getInstance().getTime();
+                DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+                final String time = dateFormat.format(d);
                 if (mnetworkutils.isnetconnected()) {
-                    if (utils.getvalue("PickupAddress") != null) {
-                        if (madapter.getCount() > 0) {
-                            Orders orders = new Orders();
+                    if (d.getHours() >= 10 && d.getHours() < 18) {
+                        if (!(utils.getvalue("PickupAddress").equals(""))) {
+                            if (madapter.getCount() > 0) {
+                                if (!utils.isRegisterd()) {
+                                    final Dialog dialog = new Dialog(getActivity());
+                                    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                                    dialog.setContentView(R.layout.dialog_confirm_address);
+                                    dialog.getWindow().setBackgroundDrawable((new ColorDrawable(android.graphics.Color.TRANSPARENT)));
+                                    dialog.show();
+                                    TextView tv = (TextView) dialog.findViewById(R.id.textView4);
+                                    TextView tv2 = (TextView) dialog.findViewById(R.id.tvButtonconfirm);
+                                    ImageView iv = (ImageView) dialog.findViewById(R.id.ivButtonconfirm);
+                                    tv2.setText("Confirm");
+                                    iv.setImageResource(R.drawable.dialog_righticon);
+                                    tv.setText(utils.getvalue("PickupFlatNo") + ", " + utils.getvalue("PickupAddress") + ", " + utils.getvalue("PickupPincode"));
+                                    dialog.findViewById(R.id.bCancel).setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            dialog.dismiss();
+                                            Intent i = new Intent(getActivity(), Activity_Reigister_Phone.class);
+                                            i.putExtra("PickupOption", "PickUpNow");
+                                            i.putExtra("adapterCount", madapter.getCount());
+                                            getActivity().startActivity(i);
+                                            getActivity().overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
+
+                                        }
+                                    });
+                                    dialog.findViewById(R.id.bChange).setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View v) {
+                                            dialog.dismiss();
+                                            Intent i = new Intent(getActivity(), Activity_Pickup_Address.class);
+                                            startActivity(i);
+                                            getActivity().overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
+
+                                        }
+                                    });
+                                } else {
+                                    BookService(new Date(), time, "Y");
+                                }
+                            } else {
+                                Toast.makeText(getActivity(), "Add Parcel to continue booking", Toast.LENGTH_LONG).show();
+                            }
+
+                        } else {
+                            Intent i = new Intent(getActivity(), Activity_Pickup_Address.class);
+                            startActivity(i);
+                            getActivity().overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
+                        }
+                    } else {
+                        for (int i = 0; i < 2; i++) {
+                            Toast.makeText(getActivity(), "We currently serve between 10 AM to 6 PM. Kindly use Pick Later option or book tomorrow.", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                } else {
+                    Toast.makeText(getActivity(), "Please Connect to a working Internet Connection", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
+        pickupLater.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        wr.event.push("PickUp Later Clicked");
+                        final Dialog dialog = new Dialog(getActivity());
+                        dialog.setTitle("Choose a date and time");
+                        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                        dialog.getWindow().setBackgroundDrawable((new ColorDrawable(android.graphics.Color.TRANSPARENT)));
+                        dialog.setContentView(R.layout.dialog_pickup_later_new);
+                        dialog.show();
+                        LinearLayout Cancel = (LinearLayout) dialog.findViewById(R.id.Cancel);
+                        LinearLayout Submit = (LinearLayout) dialog.findViewById(R.id.Submit);
+                        radioGroup1 = (RadioGroup) dialog.findViewById(R.id.radioGroup1);
+                        Cancel.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                dialog.dismiss();
+                            }
+                        });
+                        Submit.setOnClickListener(
+                                new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        dialog.dismiss();
+                                        final NetworkUtils mnetworkutils = new NetworkUtils(getActivity());
+                                        final Date d = Calendar.getInstance().getTime();
+                                        final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+                                        if (mnetworkutils.isnetconnected()) {
+                                            if (!(utils.getvalue("PickupAddress").equals(""))) {
+
+                                                if (madapter.getCount() > 0) {
+                                                    if (!utils.isRegisterd()) {
+                                                        final Dialog dialog = new Dialog(getActivity());
+                                                        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                                                        dialog.setContentView(R.layout.dialog_confirm_address);
+                                                        dialog.getWindow().setBackgroundDrawable((new ColorDrawable(android.graphics.Color.TRANSPARENT)));
+                                                        dialog.show();
+                                                        TextView tv = (TextView) dialog.findViewById(R.id.textView4);
+                                                        TextView tv2 = (TextView) dialog.findViewById(R.id.tvButtonconfirm);
+                                                        ImageView iv = (ImageView) dialog.findViewById(R.id.ivButtonconfirm);
+                                                        tv2.setText("Confirm");
+                                                        iv.setImageResource(R.drawable.dialog_righticon);
+                                                        tv.setText(utils.getvalue("PickupFlatNo") + ", " + utils.getvalue("PickupAddress") + ", " + utils.getvalue("PickupPincode"));
+                                                        dialog.findViewById(R.id.bCancel).setOnClickListener(new View.OnClickListener() {
+                                                            @Override
+                                                            public void onClick(View v) {
+                                                                dialog.dismiss();
+                                                                Intent i = new Intent(getActivity(), Activity_Reigister_Phone.class);
+                                                                i.putExtra("PickupOption", "PickUpLater");
+                                                                i.putExtra("DATE", sdf.format(PickupLaterDate));
+                                                                i.putExtra("TIME", PickupLaterTime);
+                                                                i.putExtra("adapterCount", madapter.getCount());
+                                                                getActivity().startActivity(i);
+                                                                getActivity().overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
+                                                            }
+                                                        });
+                                                        dialog.findViewById(R.id.bChange).setOnClickListener(new View.OnClickListener() {
+                                                            @Override
+                                                            public void onClick(View v) {
+                                                                dialog.dismiss();
+                                                                Intent i = new Intent(getActivity(), Activity_Pickup_Address.class);
+                                                                startActivity(i);
+                                                                getActivity().overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
+
+                                                            }
+                                                        });
+                                                    } else {
+                                                        BookService(PickupLaterDate, PickupLaterTime, "N");
+                                                    }
+                                                } else {
+                                                    Toast.makeText(getActivity(), "Add Parcel to continue booking", Toast.LENGTH_LONG).show();
+                                                }
+
+                                            } else {
+                                                Intent i = new Intent(getActivity(), Activity_Pickup_Address.class);
+                                                startActivity(i);
+                                                getActivity().overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
+                                            }
+                                        } else {
+                                            Toast.makeText(getActivity(), "Please Connect to a working Internet Connection", Toast.LENGTH_LONG).show();
+                                        }
+                                    }
+                                }
+                        );
+                        RadioButton rToday = (RadioButton) dialog.findViewById(R.id.radioToday);
+                        RadioButton rTomorrow = (RadioButton) dialog.findViewById(R.id.radioTomorrow);
+                        PickLater_Date = (NumberPicker) dialog.findViewById(R.id.timeslots);
+                        final String[] timeSlots = new String[]{"10:00 AM", "10:30 AM", "11:00 AM", "11:30 AM", "12:00 PM", "12:30 PM", "01:00 PM", "01:30 PM", "02:00 PM", "02:30 PM", "03:00 PM", "03:30 PM", "04:00 PM", "04:30 PM", "05:00 PM", "05:30 PM", "06:00 PM"};
+                        if (mDate.getHours() < 17) {
+                            ArrayList<String> time = new ArrayList<>();
+                            int x = 0;
+                            if (mDate.getHours() < 9) {
+                                x = 0;
+                            } else if (mDate.getHours() >= 9 && mDate.getHours() < 17) {
+                                if (mDate.getMinutes() > 30) {
+                                    x = (mDate.getHours() - 9) * 2 + 2;
+                                } else {
+                                    x = (mDate.getHours() - 9) * 2 + 1;
+                                }
+                            } else {
+                                x = 0;
+                            }
+                            for (int i = x; i < 17; i++) {
+                                time.add(timeSlots[i]);
+                            }
+                            final String[] times = time.toArray(new String[time.size()]);
+                            PickLater_Date.setDisplayedValues(null);
+                            PickLater_Date.setMinValue(0);
+                            PickLater_Date.setMaxValue(times.length - 1);
+                            PickLater_Date.setDisplayedValues(times);
+                            PickupLaterDate = new Date();
+                            PickupLaterTime = times[PickLater_Date.getValue()];
+                            PickLater_Date.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+                                @Override
+                                public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                                    PickupLaterTime = times[PickLater_Date.getValue()];
+                                }
+                            });
+                        } else {
+                            rToday.setVisibility(View.GONE);
+                            rTomorrow.setChecked(true);
+                            PickLater_Date = (NumberPicker) dialog.findViewById(R.id.timeslots);
+                            PickLater_Date.setDisplayedValues(null);
+                            PickLater_Date.setMinValue(0);
+                            PickLater_Date.setMaxValue(timeSlots.length - 1);
+                            PickLater_Date.setDisplayedValues(timeSlots);
+                            c.setTime(new Date());
+                            c.add(Calendar.DATE, 1);
+                            PickupLaterDate = c.getTime();
+                            PickupLaterTime = timeSlots[PickLater_Date.getValue()];
+                            PickLater_Date.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+                                @Override
+                                public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                                    PickupLaterTime = timeSlots[PickLater_Date.getValue()];
+                                }
+                            });
+                        }
+                        radioGroup1.setOnCheckedChangeListener(
+                                new RadioGroup.OnCheckedChangeListener() {
+                                    @Override
+                                    public void onCheckedChanged(RadioGroup group, int checkedId) {
+                                        PickLater_Date = (NumberPicker) dialog.findViewById(R.id.timeslots);
+                                        switch (checkedId) {
+                                            case R.id.radioToday:
+                                                mDate.getHours();
+                                                ArrayList<String> time = new ArrayList<String>();
+                                                int x = 0;
+                                                if (mDate.getHours() < 9) {
+                                                    x = 0;
+                                                } else if (mDate.getHours() >= 9 && mDate.getHours() < 17) {
+                                                    if (mDate.getMinutes() > 30) {
+                                                        x = (mDate.getHours() - 9) * 2 + 2;
+
+                                                    } else {
+                                                        x = (mDate.getHours() - 9) * 2 + 1;
+
+                                                    }
+                                                } else {
+                                                    x = 0;
+                                                }
+                                                time.addAll(Arrays.asList(timeSlots).subList(x, 17));
+                                                final String[] times = time.toArray(new String[time.size()]);
+                                                PickLater_Date.setDisplayedValues(null);
+                                                PickLater_Date.setMinValue(0);
+                                                PickLater_Date.setMaxValue(times.length - 1);
+                                                PickLater_Date.setDisplayedValues(times);
+                                                c.setTime(new Date());
+                                                c.add(Calendar.DATE, 0);
+                                                PickupLaterDate = c.getTime();
+                                                PickupLaterTime = times[PickLater_Date.getValue()];
+                                                PickLater_Date.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+                                                    @Override
+                                                    public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                                                        PickupLaterTime = times[PickLater_Date.getValue()];
+                                                    }
+                                                });
+                                                break;
+                                            case R.id.radioTomorrow:
+                                                PickLater_Date.setDisplayedValues(null);
+                                                PickLater_Date.setMinValue(0);
+                                                PickLater_Date.setMaxValue(timeSlots.length - 1);
+                                                PickLater_Date.setDisplayedValues(timeSlots);
+
+                                                PickLater_Date.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+                                                    @Override
+                                                    public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                                                        PickupLaterTime = timeSlots[PickLater_Date.getValue()];
+                                                    }
+                                                });
+                                                c.setTime(new Date());
+                                                c.add(Calendar.DATE, 1);
+                                                PickupLaterDate = c.getTime();
+                                                PickupLaterTime = timeSlots[PickLater_Date.getValue()];
+
+                                                break;
+                                            case R.id.radioDayAfter:
+                                                PickLater_Date.setDisplayedValues(null);
+                                                PickLater_Date.setMinValue(0);
+                                                PickLater_Date.setMaxValue(timeSlots.length - 1);
+                                                PickLater_Date.setDisplayedValues(timeSlots);
+                                                c.setTime(new Date());
+                                                c.add(Calendar.DATE, 2);
+                                                PickupLaterDate = c.getTime();
+                                                PickupLaterTime = timeSlots[PickLater_Date.getValue()];
+                                                PickLater_Date.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+                                                    @Override
+                                                    public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                                                        PickupLaterTime = timeSlots[PickLater_Date.getValue()];
+                                                    }
+                                                });
+
+                                                break;
+                                            default:
+                                                break;
+                                        }
+                                    }
+                                }
+                        );
+
+                    }
+                }
+        );
+        if (Activity_Main.mProgress != null && Activity_Main.mProgress.isShowing()) {
+            Activity_Main.mProgress.dismiss();
+        }
+        Button addItem = (Button) view.findViewById(R.id.bFragment_Orders_AddShipment);
+        addItem.setOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+
+                        final Dialog dialog = new Dialog(getActivity());
+                        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                        dialog.setContentView(R.layout.dialog_camera);
+                        dialog.getWindow().setBackgroundDrawable((new ColorDrawable(android.graphics.Color.TRANSPARENT)));
+                        dialog.show();
+                        dialog.findViewById(R.id.bDialogContinue).setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                dialog.dismiss();
+                                wr.event.push("Adding Shipment");
+                                captureImage();
+                            }
+                        });
+                        dialog.setCancelable(true);
+
+                    }
+                }
+
+        );
+        lv_ItemCart = (ListView) view.findViewById(R.id.lvFragment_Orders_Items_List);
+        lv_ItemCart.setOnItemClickListener(
+                new AdapterView.OnItemClickListener() {
+                    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        madapter.notifyDataSetChanged();
+                        lv_ItemCart.smoothScrollToPositionFromTop(position, 0);
+                    }
+                }
+
+        );
+        madapter = new OrderList_Adapter(getActivity(), R.layout.list_item_shipmentitem, ShowItemList());
+        lv_ItemCart.setAdapter(madapter);
+//        Target viewTarget = new ViewTarget(R.id.bFragment_Orders_AddShipment, getActivity());
+//        new ShowcaseView.Builder(getActivity())
+//                .setContentText("Hello")
+//                .setTarget(viewTarget)
+//                .build();
+    }
+
+    public ArrayList<ItemList> ShowItemList() {
+
+        Utils utils = new Utils(getActivity());
+        Item_list = new ArrayList<>();
+        List<Db_Item_List> list = Db_Item_List.getAllItems(String.valueOf(utils.getOrderId()));
+        for (int i = 0; i < Db_Item_List.getAllItems(String.valueOf(utils.getOrderId())).size(); i++) {
+            Db_Item_List addDBReceiver = list.get(i);
+            ItemList itemlist = new ItemList();
+            itemlist.setDate(addDBReceiver.date);
+            itemlist.setImage_URI(addDBReceiver.image_uri);
+            itemlist.setOrderId(addDBReceiver.orderid);
+            itemlist.setReceiver_Name(addDBReceiver.name);
+            itemlist.setPhone(addDBReceiver.phone);
+            itemlist.setFlat_no(addDBReceiver.flat_no);
+            itemlist.setLocality(addDBReceiver.locality);
+            itemlist.setCity(addDBReceiver.city);
+            itemlist.setState(addDBReceiver.state);
+            itemlist.setCountry(addDBReceiver.country);
+            itemlist.setPinCode(addDBReceiver.pincode);
+            itemlist.setShipping_Option(addDBReceiver.setshippingoption);
+            Item_list.add(itemlist);
+        }
+        return Item_list;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_main, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_Locator:
+                if (!(utils.getvalue("PickupAddress").equals(""))) {
+                    final Dialog dialog = new Dialog(getActivity());
+                    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                    dialog.setContentView(R.layout.dialog_confirm_address);
+                    dialog.getWindow().setBackgroundDrawable((new ColorDrawable(android.graphics.Color.TRANSPARENT)));
+                    dialog.show();
+                    TextView tv = (TextView) dialog.findViewById(R.id.textView4);
+                    tv.setText(utils.getvalue("PickupFlatNo") + ", " + utils.getvalue("PickupAddress") + ", " + utils.getvalue("PickupPincode"));
+                    dialog.findViewById(R.id.bCancel).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.dismiss();
+                        }
+                    });
+                    dialog.findViewById(R.id.bChange).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.dismiss();
+                            Intent i = new Intent(getActivity(), Activity_Pickup_Address.class);
+                            startActivity(i);
+                            getActivity().overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
+                        }
+                    });
+
+
+                } else {
+                    Intent i = new Intent(getActivity(), Activity_Pickup_Address.class);
+                    startActivity(i);
+                    getActivity().overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
+                }
+
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    //Open Camera
+    private void captureImage() {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        fileUri_NewImage = getOutputMediaFileUri(MEDIA_TYPE_IMAGE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri_NewImage);
+        startActivityForResult(intent, CAMERA_CAPTURE_IMAGE_REQUEST_CODE_New_Image);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // if the result is capturing Image
+        if (requestCode == CAMERA_CAPTURE_IMAGE_REQUEST_CODE) {
+            if (resultCode == Activity.RESULT_OK) {
+                File imgFile = new File(fileUri.getPath());
+                Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                File xxx = new File(fileUri.getPath());
+                try {
+                    FileOutputStream fOut = new FileOutputStream(xxx);
+                    myBitmap.compress(Bitmap.CompressFormat.JPEG, 10, fOut);
+                    fOut.flush();
+                    fOut.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                ItemList itemlist = new ItemList();
+                Utils utils = new Utils(getActivity());
+                Db_Item_List itemlistDB = new Db_Item_List();
+                itemlist.setImage_URI(fileUri.toString());
+                itemlistDB.updateImage(itemlist, utils.getvalue("oldimage"));
+                Intent i = new Intent(getActivity(), Activity_Main.class);
+                startActivity(i);
+                getActivity().overridePendingTransition(R.animator.pull_in_left, R.animator.push_out_right);
+            }
+        }
+        if (requestCode == CAMERA_CAPTURE_IMAGE_REQUEST_CODE_New_Image) {
+            if (resultCode == Activity.RESULT_OK) {
+                Intent f = new Intent(getActivity(), SaveImageService.class);
+                if (fileUri_NewImage != null)
+                    f.putExtra("ImageUrl", fileUri_NewImage.toString());
+                getActivity().startService(f);
+                Intent i = new Intent(getActivity(), Activity_Address_Search_Receiver.class);
+                if (fileUri_NewImage != null)
+                    i.putExtra("ImageURI", fileUri_NewImage.toString());
+                startActivity(i);
+                getActivity().overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
+
+            }
+        }
+    }
+
+    //check if device supports the camera
+    private boolean isDeviceSupportCamera() {
+        if (getActivity().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
+            return true;
+        } else {
+            Toast.makeText(getActivity(), "Your Device is not camera supported", Toast.LENGTH_LONG).show();
+            return false;
+        }
+    }
+
+    //generate file uri
+    public Uri getOutputMediaFileUri(int type) {
+        return Uri.fromFile(getOutputMediaFile(type));
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        wr.activityPaused(getActivity());
+    }
+
+    public void BookService(final Date date1, final String time1, final String from) {
+        final NetworkUtils mnetworkutils = new NetworkUtils(getActivity());
+        final ProgressDialog mprogress;
+        mprogress = new ProgressDialog(getActivity());
+        mprogress.setMessage("Scheduling your pickup, Please wait.");
+        mprogress.setCancelable(false);
+        mprogress.setIndeterminate(true);
+        if (mnetworkutils.isnetconnected()) {
+            if (!(utils.getvalue("PickupAddress").equals(""))) {
+                if (madapter.getCount() > 0) {
+                    final Dialog dialog = new Dialog(getActivity());
+                    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                    dialog.setContentView(R.layout.dialog_confirm_address);
+                    dialog.getWindow().setBackgroundDrawable((new ColorDrawable(android.graphics.Color.TRANSPARENT)));
+                    dialog.show();
+                    TextView tv = (TextView) dialog.findViewById(R.id.textView4);
+                    TextView tv2 = (TextView) dialog.findViewById(R.id.tvButtonconfirm);
+                    ImageView iv = (ImageView) dialog.findViewById(R.id.ivButtonconfirm);
+                    tv2.setText("Confirm");
+                    iv.setImageResource(R.drawable.dialog_righticon);
+                    tv.setText(utils.getvalue("PickupFlatNo") + ", " + utils.getvalue("PickupAddress") + ", " + utils.getvalue("PickupPincode"));
+                    dialog.findViewById(R.id.bCancel).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.dismiss();
+
+                            final Orders orders = new Orders();
                             final Utils utils = new Utils(getActivity());
                             orders.setUser(utils.getvalue("RegisteredPhone"));
-                            orders.setDate(date);
-                            orders.setTime(Time1);
+                            orders.setDate(date1);
+                            orders.setTime(time1);
+                            orders.setPick_now(from);
+                            orders.setCode(utils.getvalue("coupon_code"));
+                            orders.setEmail(utils.getvalue("Sender_Email"));
+                            orders.setName(utils.getvalue("Sender_Name"));
                             orders.setAddress(utils.getvalue("PickupAddress"));
                             orders.setFlat_no(utils.getvalue("PickupFlatNo"));
-                            orders.setLatitude(Double.parseDouble(utils.getvalue("Lat")));
-                            orders.setLongitude(Double.parseDouble(utils.getvalue("Longi")));
+
+                            try {
+                                if (!utils.getvalue("Lat").equals("null"))
+                                    orders.setLatitude(Double.parseDouble(utils.getvalue("Lat")));
+                                if (!utils.getvalue("Longi").equals("null"))
+                                    orders.setLongitude(Double.parseDouble(utils.getvalue("Longi")));
+                            } catch (NumberFormatException | NullPointerException e) {
+
+                            }
+
                             orders.setPincode(utils.getvalue("PickupPincode"));
-                            pd.show();
-                            // Log.i("qwertyuiopajklzxcvbnm,", orders.getUser() + orders.getDate() + orders.getTime() + orders.getPickup_flat_no() + orders.getPickup_locality() + orders.getPickup_city() + orders.getPickup_pincode() + orders.getPickup_state() + orders.getPickup_country());
+                            mprogress.show();
+                            Log.i("qwertyuiopajklzxcvbnm,", orders.getUser() + orders.getDate() + orders.getTime() + orders.getPickup_flat_no() + orders.getPickup_locality() + orders.getPickup_city() + orders.getPickup_pincode() + orders.getPickup_state() + orders.getPickup_country());
                             final CompleteOrder completeOrder = new CompleteOrder();
                             mnetworkutils.getapi().order(orders, new Callback<Orders>() {
                                 @Override
                                 public void success(final Orders orders, Response response) {
-                                    if (pd != null && pd.isShowing()) {
-
-                                        completeOrder.setDate(date);
+                                    if (mprogress.isShowing()) {
                                         completeOrder.setPickup_address(orders.getAddress());
-                                        completeOrder.setPickup_name(utils.getvalue("S_Name"));
+                                        completeOrder.setPickup_name(orders.getName());
                                         completeOrder.setPickup_phone(orders.getUser());
+                                        completeOrder.setEmail(orders.getEmail());
                                         completeOrder.setPickup_pincode(orders.getPincode());
-                                        completeOrder.setTime(Time1);
                                         completeOrder.setOrder_Status(orders.getStatus());
                                         completeOrder.setPaid(orders.getPaid());
                                         completeOrder.setTotal_cost(orders.getCost());
-
+                                        completeOrder.setDate(date1);
+                                        completeOrder.setTime(time1);
+                                        Log.i("orders.getStatus() =", orders.getStatus());
                                         Log.i("OrderNumber Generated =", orders.getOrder_no());
                                         madapter.getCount();
-                                        Db_Item_List newItem = new Db_Item_List();
                                         Item_list = new ArrayList<>();
-                                        List<Db_Item_List> list = newItem.getAllItems(String.valueOf(utils.getOrderId()));
+                                        List<Db_Item_List> list = Db_Item_List.getAllItems(String.valueOf(utils.getOrderId()));
 
                                         for (int i = 0; i < madapter.getCount(); i++) {
-                                            Db_Item_List addDBReceiver = list.get(i);
+                                            final Db_Item_List addDBReceiver = list.get(i);
                                             String cat = "S";
 
-                                            if (addDBReceiver.setshippingoption.equals("Standard")) {
-                                                cat = "S";
-                                            } else if (addDBReceiver.setshippingoption.equals("Bulk")) {
-                                                cat = "E";
-                                            } else if (addDBReceiver.setshippingoption.equals("Set Shipping Option") ||addDBReceiver.setshippingoption.equals("Premium")) {
-                                                cat = "P";
+                                            switch (addDBReceiver.setshippingoption) {
+                                                case "Standard":
+                                                    cat = "S";
+                                                    break;
+                                                case "Bulk":
+                                                    cat = "E";
+                                                    break;
+                                                case "Set Shipping Option":
+                                                case "Premium":
+                                                    cat = "P";
+                                                    break;
                                             }
                                             final Uri imageuri = Uri.parse(addDBReceiver.image_uri);
 
@@ -197,7 +901,7 @@ public class Fragment_Orders extends Fragment {
 
                                                 @Override
                                                 public void success(Shipment shipment, Response response) {
-
+                                                    Log.i("adf;sdjfl;sdfaj;lkjf", shipment.getDrop_flat_no() + ", " + shipment.getDrop_locality() + shipment.getDrop_city() + ", " + shipment.getDrop_state() + ", " + shipment.getDrop_country());
                                                     completeOrder.setDrop_address(shipment.getDrop_flat_no() + ", " + shipment.getDrop_locality() + shipment.getDrop_city() + ", " + shipment.getDrop_state() + ", " + shipment.getDrop_country());
                                                     completeOrder.setDrop_phone(shipment.getDrop_phone());
                                                     completeOrder.setDrop_name(shipment.getDrop_name());
@@ -207,22 +911,29 @@ public class Fragment_Orders extends Fragment {
                                                     completeOrder.setTracking_no(shipment.getTracking_no());
                                                     completeOrder.setCategory(shipment.getCategory());
                                                     completeOrder.setOrder_id(orders.getOrder_no());
-                                                    Db_CompleteOrder DBCO = new Db_CompleteOrder();
-                                                    DBCO.AddToDB(completeOrder);
-                                                    Log.i("Tracking no.Generated", shipment.getTracking_no());
-                                                    Log.i("Category", shipment.getCategory());
-
-                                                    pd.dismiss();
+                                                    if (utils.isSynced()) {
+                                                        Db_CompleteOrder DBCO = new Db_CompleteOrder();
+                                                        DBCO.AddToDB(completeOrder);
+                                                    }
+                                                    mprogress.dismiss();
+                                                    utils.setvalue("coupon_code_msg", "");
+                                                    utils.setvalue("coupon_code", "");
                                                     Intent i = new Intent(getActivity(), Activity_ThankYou.class);
-                                                    i.putExtra("PickLater",true);
+
+                                                    if (from.equals("Y"))
+                                                        i.putExtra("PickLater", false);
+                                                    else
+                                                        i.putExtra("PickLater", true);
+
                                                     startActivity(i);
                                                     getActivity().overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
                                                 }
 
                                                 @Override
                                                 public void failure(RetrofitError error) {
-                                                    Log.i("Error Adding Shipments", error.toString());
-                                                    pd.dismiss();
+                                                    Log.i("adf;sdjfl;sdfaj;lkjf", error.toString());
+
+                                                    mprogress.dismiss();
                                                 }
                                             });
                                         }
@@ -231,228 +942,38 @@ public class Fragment_Orders extends Fragment {
 
                                 @Override
                                 public void failure(RetrofitError error) {
-                                    if (pd != null && pd.isShowing()) {
-                                        pd.dismiss();
-                                        Log.i("Error Adding Order", error.toString());
+                                    if (mprogress.isShowing()) {
+                                        mprogress.dismiss();
                                     }
+                                    Log.i("qwertyuiopajklzxcvbnm,", error.toString());
+
                                 }
                             });
-                        } else {
-                            Toast.makeText(getActivity(), "Add Item", Toast.LENGTH_LONG).show();
                         }
-                    } else {
-                        Toast.makeText(getActivity(), "Set your Pickup Address", Toast.LENGTH_LONG).show();
-                    }
+                    });
+                    dialog.findViewById(R.id.bChange).setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            dialog.dismiss();
+                            Intent i = new Intent(getActivity(), Activity_Pickup_Address.class);
+                            startActivity(i);
+                            getActivity().overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
+
+                        }
+                    });
                 } else {
-                    Toast.makeText(getActivity(), "Please Connect to a working Internet Connection", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), "Add Item", Toast.LENGTH_LONG).show();
                 }
+
             } else {
-                Toast.makeText(getActivity(), "We currently serve Between 10 AM to 6 PM", Toast.LENGTH_LONG).show();
-            }
-        }
-
-        @Override
-        public void onDateTimeCancel() {
-            // Overriding onDateTimeCancel() is optional.
-        }
-    };
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        setHasOptionsMenu(true);
-        Activity_Main.exit = true;
-        rl = (RelativeLayout) view.findViewById(R.id.setlocationrl);
-        utils = new Utils(getActivity());
-        if (utils.getvalue("PickupAddress") == null) {
-            ((Activity_Main) getActivity()).setActionBarTitle("Sendd");
-
-        } else {
-            ((Activity_Main) getActivity()).setActionBarTitle(utils.getvalue("PickupFlatNo") + ", " + utils.getvalue("PickupAddress"));
-            rl.setVisibility(View.GONE);
-        }
-        ((Activity_Main) getActivity()).showActionBar();
-
-        //Initialize Universal ImageLoader
-        DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
-                .cacheInMemory(true)
-                .cacheOnDisk(true)
-                .build();
-        ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(getActivity()).defaultDisplayImageOptions(defaultOptions).build();
-        ImageLoader.getInstance().init(config);
-
-
-        Button pickupNow = (Button) view.findViewById(R.id.bFragment_Orders_PickNow);
-        Button pickupLater = (Button) view.findViewById(R.id.bFragment_Orders_PickLater);
-
-        pickupNow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Date d = Calendar.getInstance().getTime();
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                if (d.getHours() >= 10 && d.getHours()<= 18) {
-                    Log.i("sda", String.valueOf(d.getHours()));
-                    pd = new ProgressDialog(getActivity());
-                    pd.setMessage("Loading, Please wait....");
-                    pd.setCancelable(false);
-                    pd.setIndeterminate(true);
-                    final NetworkUtils mnetworkutils = new NetworkUtils(getActivity());
-                    if (mnetworkutils.isnetconnected()) {
-                        if (utils.getvalue("PickupAddress") != null) {
-                            if (madapter.getCount() > 0) {
-                                Orders orders = new Orders();
-                                final Utils utils = new Utils(getActivity());
-
-                                final String date = sdf.format(d); // Get
-                                DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-                                final String time = dateFormat.format(d);
-                                orders.setUser(utils.getvalue("RegisteredPhone"));
-                                orders.setDate(new Date());
-                                orders.setTime(time);
-                                orders.setAddress(utils.getvalue("PickupAddress"));
-                                orders.setFlat_no(utils.getvalue("PickupFlatNo"));
-                                orders.setLatitude(Double.parseDouble(utils.getvalue("Lat")));
-                                orders.setLongitude(Double.parseDouble(utils.getvalue("Longi")));
-                                orders.setPincode(utils.getvalue("PickupPincode"));
-                                pd.show();
-                                // Log.i("qwertyuiopajklzxcvbnm,", orders.getUser() + orders.getDate() + orders.getTime() + orders.getPickup_flat_no() + orders.getPickup_locality() + orders.getPickup_city() + orders.getPickup_pincode() + orders.getPickup_state() + orders.getPickup_country());
-                                final CompleteOrder completeOrder = new CompleteOrder();
-                                mnetworkutils.getapi().order(orders, new Callback<Orders>() {
-                                    @Override
-                                    public void success(final Orders orders, Response response) {
-                                        if (pd != null && pd.isShowing()) {
-                                            completeOrder.setPickup_address(orders.getAddress());
-                                            completeOrder.setPickup_name(utils.getvalue("S_Name"));
-                                            completeOrder.setPickup_phone(orders.getUser());
-                                            completeOrder.setPickup_pincode(orders.getPincode());
-                                            completeOrder.setOrder_Status(orders.getStatus());
-                                            completeOrder.setPaid(orders.getPaid());
-                                            completeOrder.setTotal_cost(orders.getCost());
-
-                                            completeOrder.setDate(new Date());
-                                            completeOrder.setTime(time);
-
-                                            Log.i("OrderNumber Generated =", orders.getOrder_no());
-                                            madapter.getCount();
-                                            Db_Item_List newItem = new Db_Item_List();
-                                            Item_list = new ArrayList<>();
-                                            List<Db_Item_List> list = newItem.getAllItems(String.valueOf(utils.getOrderId()));
-
-                                            for (int i = 0; i < madapter.getCount(); i++) {
-                                                Db_Item_List addDBReceiver = list.get(i);
-                                                String cat = "S";
-
-                                                if ( addDBReceiver.setshippingoption.equals("Standard")) {
-                                                    cat = "S";
-                                                } else if (addDBReceiver.setshippingoption.equals("Bulk")) {
-                                                    cat = "E";
-                                                } else if (addDBReceiver.setshippingoption.equals("Set Shipping Option") ||addDBReceiver.setshippingoption.equals("Premium")) {
-                                                    cat = "P";
-                                                }
-                                                final Uri imageuri = Uri.parse(addDBReceiver.image_uri);
-
-                                                Log.i("qweqwertyui", imageuri.getPath() + "   " + addDBReceiver.name + "   " + addDBReceiver.phone + "   " + addDBReceiver.flat_no + "   " + addDBReceiver.locality + "   " + addDBReceiver.city + "   " + addDBReceiver.state + "   " + addDBReceiver.country + "   " + addDBReceiver.pincode + "   " + orders.getOrder_no() + "   " + cat);
-                                                mnetworkutils.getapi().shipment(new TypedFile("image/jpeg", new File(imageuri.getPath())), addDBReceiver.name, addDBReceiver.phone, addDBReceiver.flat_no, addDBReceiver.locality, addDBReceiver.city, addDBReceiver.state, addDBReceiver.country, addDBReceiver.pincode, orders.getOrder_no(), cat, new Callback<Shipment>() {
-
-                                                    @Override
-                                                    public void success(Shipment shipment, Response response) {
-
-                                                        completeOrder.setDrop_address(shipment.getDrop_flat_no() + ", " + shipment.getDrop_locality() + shipment.getDrop_city() + ", " + shipment.getDrop_state() + ", " + shipment.getDrop_country());
-                                                        completeOrder.setDrop_phone(shipment.getDrop_phone());
-                                                        completeOrder.setDrop_name(shipment.getDrop_name());
-                                                        completeOrder.setDrop_pincode(shipment.getDrop_pincode());
-                                                        completeOrder.setCost(shipment.getCost());
-                                                        completeOrder.setImage_uri(imageuri.getPath());
-                                                        completeOrder.setTracking_no(shipment.getTracking_no());
-                                                        completeOrder.setCategory(shipment.getCategory());
-                                                        completeOrder.setOrder_id(orders.getOrder_no());
-                                                        Db_CompleteOrder DBCO = new Db_CompleteOrder();
-                                                        DBCO.AddToDB(completeOrder);
-                                                        Log.i("Tracking no.Generated", shipment.getTracking_no());
-                                                        Log.i("Category", shipment.getCategory());
-
-                                                        pd.dismiss();
-                                                        Intent i = new Intent(getActivity(), Activity_ThankYou.class);
-                                                        i.putExtra("PickLater",false);
-                                                        startActivity(i);
-                                                        getActivity().overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
-                                                    }
-
-                                                    @Override
-                                                    public void failure(RetrofitError error) {
-                                                        Log.i("Error Adding Shipments", error.toString());
-                                                        pd.dismiss();
-                                                    }
-                                                });
-                                            }
-                                        }
-                                    }
-
-                                    @Override
-                                    public void failure(RetrofitError error) {
-                                        if (pd != null && pd.isShowing()) {
-                                            pd.dismiss();
-                                            Log.i("Error Adding Order", error.toString());
-                                        }
-                                    }
-                                });
-                            } else {
-                                Toast.makeText(getActivity(), "Add Item", Toast.LENGTH_LONG).show();
-                            }
-                        } else {
-                            Toast.makeText(getActivity(), "Set your Pickup Address", Toast.LENGTH_LONG).show();
-                        }
-                    } else {
-                        Toast.makeText(getActivity(), "Please Connect to a working Internet Connection", Toast.LENGTH_LONG).show();
-                    }
-                } else {
-                    for (int i = 0; i < 2; i++) {
-                        Toast.makeText(getActivity(), "We currently serve between 10 AM to 6 PM. Kindly use Pick Later option or book tomorrow.", Toast.LENGTH_LONG).show();
-                    }
-                 }
-            }
-        });
-
-        pickupLater.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                new SlideDateTimePicker.Builder(getFragmentManager())
-                        .setListener(listener)
-                        .setMinDate(new Date())
-                        .setIs24HourTime(true)
-                        .setInitialDate(new Date())
-                        .build()
-                        .show();
-
-            }
-        });
-        if (Activity_Main.mProgress != null && Activity_Main.mProgress.isShowing()) {
-            Activity_Main.mProgress.dismiss();
-
-        }
-
-        Button addItem = (Button) view.findViewById(R.id.bFragment_Orders_AddShipment);
-        addItem.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent i = new Intent(getActivity().getApplicationContext(), Activity_Address_Search_Receiver.class);
+                Intent i = new Intent(getActivity(), Activity_Pickup_Address.class);
                 startActivity(i);
                 getActivity().overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
             }
-        });
-        lv_ItemCart = (ListView) view.findViewById(R.id.lvFragment_Orders_Items_List);
-        lv_ItemCart.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                madapter.notifyDataSetChanged();
-                lv_ItemCart.smoothScrollToPositionFromTop(position, 0);
+        } else {
+            Toast.makeText(getActivity(), "Please Connect to a working Internet Connection", Toast.LENGTH_LONG).show();
+        }
 
-            }
-        });
-        madapter = new OrderList_Adapter(getActivity(), R.layout.list_item_shipmentitem, ShowItemList());
-        lv_ItemCart.setAdapter(madapter);
     }
 
     public class OrderCart_holder {
@@ -528,18 +1049,19 @@ public class Fragment_Orders extends Fragment {
                 ordercart_holder = (OrderCart_holder) convertView.getTag();
             }
             if (getCount() > 0) {
-                Log.i("Inhere", String.valueOf(getCount()));
-                Activity_Main.noShipmentTv.setVisibility(View.INVISIBLE);
+                rlPromoCode.setVisibility(View.VISIBLE);
+                bottomButtons.setVisibility(View.VISIBLE);
+                noShipmentTv.setVisibility(View.INVISIBLE);
             } else {
-                Log.i("Caladfljshfdskj", String.valueOf(getCount()));
-                Activity_Main.noShipmentTv.setVisibility(View.VISIBLE);
+                rlPromoCode.setVisibility(View.INVISIBLE);
+                bottomButtons.setVisibility(View.INVISIBLE);
+                noShipmentTv.setVisibility(View.VISIBLE);
             }
             ImageLoader.getInstance().displayImage(Item_list.get(position).getImage_URI(), ordercart_holder.item_image);
             ordercart_holder.reciever_name.setText(Item_list.get(position).getReceiver_Name());
             ordercart_holder.address_line1.setText(Item_list.get(position).getFlat_no() + ", " + Item_list.get(position).getLocality());
             ordercart_holder.address_line2.setText(Item_list.get(position).getCity() + ", " + Item_list.get(position).getState());
             ordercart_holder.shipping_option.setText(Item_list.get(position).getShipping_Option());
-
             ordercart_holder.item_image.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -586,13 +1108,12 @@ public class Fragment_Orders extends Fragment {
                             Utils utils = new Utils(getActivity());
                             items.deleteItem(String.valueOf(utils.getOrderId()), Item_list.get(position).getImage_URI());
                             if (getCount() == 1) {
-                                Activity_Main.noShipmentTv.setVisibility(View.VISIBLE);
-
+                                noShipmentTv.setVisibility(View.VISIBLE);
+                                bottomButtons.setVisibility(View.INVISIBLE);
+                                rlPromoCode.setVisibility(View.INVISIBLE);
                             }
-
                             madapter = new OrderList_Adapter(getActivity(), R.layout.list_item_shipmentitem, ShowItemList());
                             lv_ItemCart.setAdapter(madapter);
-                            Log.i("Cross CLicked", "Item Deleted");
                             madapter.notifyDataSetChanged();
                         }
                     });
@@ -602,7 +1123,6 @@ public class Fragment_Orders extends Fragment {
                         }
                     });
                     AlertDialog dialog = builder.show();
-
                     TextView messageText = (TextView) dialog.findViewById(android.R.id.message);
                     messageText.setGravity(Gravity.CENTER);
                     dialog.show();
@@ -631,7 +1151,7 @@ public class Fragment_Orders extends Fragment {
             ordercart_holder.shipping_option.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (utils.getvalue("PickupAddress") != null) {
+                    if (!(utils.getvalue("PickupAddress").equals(""))) {
                         Intent i = new Intent(getActivity(), Activity_Shipping_Options.class);
                         i.putExtra("imageuri", Item_list.get(position).getImage_URI());
                         i.putExtra("shipping value", ordercart_holder.shipping_option.getText());
@@ -643,153 +1163,7 @@ public class Fragment_Orders extends Fragment {
                     }
                 }
             });
-
             return convertView;
         }
-
-
     }
-
-    public ArrayList<ItemList> ShowItemList() {
-
-        Utils utils = new Utils(getActivity());
-        Db_Item_List newItem = new Db_Item_List();
-        Item_list = new ArrayList<ItemList>();
-        List<Db_Item_List> list = newItem.getAllItems(String.valueOf(utils.getOrderId()));
-        for (int i = 0; i < newItem.getAllItems(String.valueOf(utils.getOrderId())).size(); i++) {
-            Db_Item_List addDBReceiver = list.get(i);
-            ItemList itemlist = new ItemList();
-            itemlist.setDate(newItem.date);
-            itemlist.setImage_URI(addDBReceiver.image_uri);
-            itemlist.setOrderId(addDBReceiver.orderid);
-            itemlist.setReceiver_Name(addDBReceiver.name);
-            itemlist.setPhone(addDBReceiver.phone);
-            itemlist.setFlat_no(addDBReceiver.flat_no);
-            itemlist.setLocality(addDBReceiver.locality);
-            itemlist.setCity(addDBReceiver.city);
-            itemlist.setState(addDBReceiver.state);
-            itemlist.setCountry(addDBReceiver.country);
-            itemlist.setPinCode(addDBReceiver.pincode);
-            itemlist.setShipping_Option(addDBReceiver.setshippingoption);
-            Item_list.add(itemlist);
-        }
-        return Item_list;
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu_main, menu);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_Locator:
-                Utils utils = new Utils(getActivity());
-
-                if (utils.getvalue("PickupAddress") != null) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                    builder.setTitle("Current Pickup Address");
-                    builder.setMessage(utils.getvalue("PickupFlatNo") + ", " + utils.getvalue("PickupAddress"));
-                    builder.setPositiveButton("Change", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            Intent i = new Intent(getActivity(), Activity_Maps.class);
-                            startActivity(i);
-                            getActivity().overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
-                        }
-                    });
-                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                        }
-                    });
-                    AlertDialog dialog = builder.show();
-
-                    TextView messageText = (TextView) dialog.findViewById(android.R.id.message);
-                    messageText.setGravity(Gravity.CENTER);
-                    dialog.show();
-                } else {
-                    Intent i = new Intent(getActivity(), Activity_Maps.class);
-                    startActivity(i);
-                    getActivity().overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
-                }
-//
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        // if the result is capturing Image
-        if (requestCode == CAMERA_CAPTURE_IMAGE_REQUEST_CODE) {
-            if (resultCode == getActivity().RESULT_OK) {
-
-                File imgFile = new File(fileUri.getPath());
-                Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                File xxx = new File(fileUri.getPath());
-                try {
-                    FileOutputStream fOut = new FileOutputStream(xxx);
-                    myBitmap.compress(Bitmap.CompressFormat.JPEG, 10, fOut);
-                    fOut.flush();
-                    fOut.close();
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                ItemList itemlist = new ItemList();
-                Utils utils = new Utils(getActivity());
-                Db_Item_List itemlistDB = new Db_Item_List();
-                itemlist.setImage_URI(fileUri.toString());
-                itemlistDB.updateImage(itemlist, utils.getvalue("oldimage"));
-                Intent i = new Intent(getActivity(), Activity_Main.class);
-                startActivity(i);
-                getActivity().overridePendingTransition(R.animator.pull_in_left, R.animator.push_out_right);
-            } else {
-                Toast.makeText(getActivity(), "Sorry! Failed to capture image", Toast.LENGTH_SHORT).show();
-            }
-
-        }
-    }
-
-    //check if device supports the camera
-    private boolean isDeviceSupportCamera() {
-        if (getActivity().getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
-            return true;
-        } else {
-            Toast.makeText(getActivity(), "Your DEvice is not camera supported", Toast.LENGTH_LONG).show();
-            return false;
-        }
-    }
-
-    //generate file uri
-    public Uri getOutputMediaFileUri(int type) {
-        return Uri.fromFile(getOutputMediaFile(type));
-    }
-
-    //Create a File
-    private static File getOutputMediaFile(int type) {
-
-        // Create SD card Location
-        File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES), "Sendd");
-
-        // Create the storage directory if it does not exist
-        if (!mediaStorageDir.exists()) {
-            if (!mediaStorageDir.mkdirs()) {
-                Log.d("Sendd", "Failed create Sendd directory");
-                return null;
-            }
-        }
-        // Create a media file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
-        File mediaFile;
-        if (type == MEDIA_TYPE_IMAGE) {
-            mediaFile = new File(mediaStorageDir.getPath() + File.separator + "IMG_" + timeStamp + ".jpeg");
-        } else {
-            return null;
-        }
-        return mediaFile;
-    }
-
 }

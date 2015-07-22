@@ -9,11 +9,10 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import co.sendd.databases.Db_User;
-import co.sendd.helper.Utils;
-import co.sendd.R;
-
 import java.util.ArrayList;
+
+import co.sendd.R;
+import co.sendd.helper.Utils;
 
 public class NavDrawer_Adapter extends BaseAdapter {
 
@@ -69,7 +68,6 @@ public class NavDrawer_Adapter extends BaseAdapter {
             TextView txtTitle = (TextView) convertView.findViewById(R.id.nav_drawer_item_title);
             txtTitle.setText(navDrawerItems.get(position - 1).getTitle());
             ImageView seticon = (ImageView) convertView.findViewById(R.id.nav_drawer_item_icon);
-            Utils utils = new Utils(context);
 
             switch (position) {
                 case 1:
@@ -82,26 +80,31 @@ public class NavDrawer_Adapter extends BaseAdapter {
                     seticon.setImageResource(R.drawable.basic_calculator_icon);
                     break;
                 case 4:
-                    seticon.setImageResource(R.drawable.faq_icon);
+                    seticon.setImageResource(R.drawable.notif_icon);
                     break;
                 case 5:
+                    seticon.setImageResource(R.drawable.faq_icon);
+                    break;
+                case 6:
+                    seticon.setImageResource(R.drawable.tutorial);
+                    break;
+                case 7:
                     seticon.setImageResource(R.drawable.customer_support_icon);
                     break;
-
+                case 8:
+                    seticon.setImageResource(R.drawable.logout_icon);
+                    break;
 
 
             }
         } else {
             TextView txtTitle = (TextView) convertView.findViewById(R.id.title_first_nav_item);
-            TextView txtNumber = (TextView) convertView.findViewById(R.id.settings_first_nav_item);
-
-            Db_User accessDB = new Db_User();
-            if (accessDB.getName()== null) {
-                txtTitle.setText("Hello");
-
+            Utils utils = new Utils(context);
+            if (utils.isRegisterd()) {
+                txtTitle.setText(utils.getvalue("RegisteredPhone"));
             } else {
-                txtTitle.setText(accessDB.getName());
-             }
+                txtTitle.setText("Hello");
+            }
         }
 
         return convertView;

@@ -38,6 +38,8 @@
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
             android:focusable="false"
+            android:maxLines="1"
+            android:maxWidth="150dp"
             android:text="Name"
             android:textColor="@color/black"
             android:textSize="@dimen/TextSize20" />
@@ -52,20 +54,24 @@
             android:layout_below="@+id/tvShipmentname"
             android:layout_marginTop="5dp"
             android:focusable="false"
+            android:singleLine="true"
             android:text="Address"
+
             android:textColor="@color/black"
             android:textSize="14sp" />
 
         <Button
             android:id="@+id/bshipmentstatus"
-            android:layout_width="150dp"
+            android:layout_width="wrap_content"
             android:layout_height="20dp"
             android:layout_alignLeft="@+id/tvShipmentaddress"
             android:layout_alignStart="@+id/tvShipmentaddress"
             android:layout_below="@+id/tvShipmentaddress"
             android:layout_marginTop="7dp"
             android:background="@drawable/buttons"
-             android:focusable="false"
+            android:focusable="false"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
             android:text="123456789"
             android:textColor="@color/white"
             android:textSize="@dimen/TextSize12" />

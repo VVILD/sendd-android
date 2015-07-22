@@ -3,14 +3,17 @@ package co.sendd.helper;
 import android.app.Application;
 
 import com.activeandroid.ActiveAndroid;
+import com.activeandroid.Configuration;
 import com.crashlytics.android.Crashlytics;
-import co.sendd.R;
 
-import io.fabric.sdk.android.Fabric;
 import java.io.File;
 
-import uk.co.chrisjenx.calligraphy.CalligraphyConfig;
-
+import co.sendd.databases.Db_Address_Receiver;
+import co.sendd.databases.Db_CompleteOrder;
+import co.sendd.databases.Db_Item_List;
+import co.sendd.databases.Db_Notifications;
+import co.sendd.databases.Db_User;
+import io.fabric.sdk.android.Fabric;
 
 /**
  * Created by Kuku on 26/12/14.
@@ -19,16 +22,33 @@ public class App extends Application {
 
     private static App instance;
 
+    public static App getInstance() {
+        return instance;
+    }
+
+    public static boolean deleteDir(File dir) {
+        if (dir != null && dir.isDirectory()) {
+            String[] children = dir.list();
+            int i = 0;
+            while (i < children.length) {
+                boolean success = deleteDir(new File(dir, children[i]));
+                if (!success) {
+                    return false;
+                }
+                i++;
+            }
+        }
+        return dir.delete();
+    }
+
     @Override
     public void onCreate() {
         super.onCreate();
+
         Fabric.with(this, new Crashlytics());
-        ActiveAndroid.initialize(this);
-        CalligraphyConfig.initDefault("fonts/OpenSans_Regular.ttf", R.attr.fontPath);
+        initializeDB();
+        //        CalligraphyConfig.initDefault("fonts/Robotsdo-Light.ttf", R.attr.fontPath);
         instance = this;
-    }
-    public static App getInstance() {
-        return instance;
     }
 
     public void clearApplicationData() {
@@ -44,19 +64,14 @@ public class App extends Application {
         }
     }
 
-    public static boolean deleteDir(File dir) {
-        if (dir != null && dir.isDirectory()) {
-            String[] children = dir.list();
-            for (int i = 0; i < children.length; i++) {
-                boolean success = deleteDir(new File(dir, children[i]));
-                if (!success) {
-                    return false;
-                }
-            }
-        }
+    protected void initializeDB() {
+        Configuration.Builder configurationBuilder = new Configuration.Builder(this);
+        configurationBuilder.addModelClasses(Db_Address_Receiver.class);
+        configurationBuilder.addModelClasses(Db_CompleteOrder.class);
+        configurationBuilder.addModelClasses(Db_Item_List.class);
+        configurationBuilder.addModelClasses(Db_User.class);
+        configurationBuilder.addModelClasses(Db_Notifications.class);
 
-        return dir.delete();
+        ActiveAndroid.initialize(configurationBuilder.create());
     }
-
-
 }

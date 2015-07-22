@@ -7,6 +7,7 @@ public class Shipment {
 
 
     private String tracking_no;
+
     private String status;
     private String cost;
     private String order;

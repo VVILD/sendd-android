@@ -4,6 +4,7 @@
     android:id="@+id/main_parent"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     android:orientation="vertical">
 
     <include
@@ -21,26 +22,19 @@
         android:textColor="@color/black"
         android:textSize="16sp" />
 
-    <RelativeLayout
-        android:id="@+id/rlmain"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/tv_title_2"
-        android:orientation="vertical"
-        android:padding="15dp">
-
         <ScrollView
+            android:id="@+id/rlmain"
             android:layout_width="match_parent"
             android:layout_height="fill_parent"
-            android:layout_marginBottom="35dp">
+            android:layout_below="@+id/tv_title_2"
+            android:layout_marginBottom="35dp"
+            android:orientation="vertical"
+            android:padding="15dp">
 
             <RelativeLayout
-
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="35dp"
                 android:orientation="vertical">
-
                 <RelativeLayout
                     android:id="@+id/rlName"
                     android:layout_width="wrap_content"
@@ -67,7 +61,8 @@
                         android:layout_marginStart="10dp"
                         android:layout_toEndOf="@+id/ivName"
                         android:layout_toRightOf="@+id/ivName"
-                        android:hint="@string/FullName"
+                        android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ12:34567890 !@#$%^{}|[]\'>?/.,&quot;  &amp;*()_+=-;"
+                        android:hint="Name"
                         android:inputType="textCapWords"
                         android:singleLine="true" />
                 </RelativeLayout>
@@ -76,7 +71,7 @@
                     android:id="@+id/rlPhone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/rlName"
+                    android:layout_below="@+id/rlName"
                     android:layout_gravity="center"
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
@@ -99,7 +94,7 @@
                         android:layout_marginStart="10dp"
                         android:layout_toEndOf="@+id/ivPhone"
                         android:layout_toRightOf="@+id/ivPhone"
-                        android:hint="@string/PhoneNumber"
+                        android:hint="Phone Number"
                         android:inputType="phone"
                         android:singleLine="true" />
                 </RelativeLayout>
@@ -131,7 +126,8 @@
                         android:layout_marginStart="10dp"
                         android:layout_toEndOf="@+id/ivflatno"
                         android:layout_toRightOf="@+id/ivflatno"
-                        android:hint="@string/FaltnoBldNo"
+                        android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ12:34567890 !@#$%^{}|[]\'>?/.,&quot;  &amp;*()_+=-;"
+                        android:hint="Flat/House no."
                         android:inputType="textCapWords"
                         android:singleLine="true" />
                 </RelativeLayout>
@@ -160,8 +156,10 @@
                         android:layout_height="wrap_content"
                         android:layout_toEndOf="@+id/ivLocality"
                         android:layout_toRightOf="@+id/ivLocality"
+
+                        android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ12:34567890 !@#$%^{}|[]\'>?/.,&quot;  &amp;*()_+=-;"
                         android:hint="@string/Locality"
-                        android:inputType="textCapWords" />
+                        android:singleLine="false" />
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -187,7 +185,9 @@
                         android:layout_height="50dp"
                         android:layout_toEndOf="@+id/ivCity"
                         android:layout_toRightOf="@+id/ivCity"
+                        android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ12:34567890 !@#$%^{}|[]\'>?/.,&quot;  &amp;*()_+=-;"
                         android:hint="@string/City"
+
                         android:inputType="textCapWords"
                         android:singleLine="true" />
                 </RelativeLayout>
@@ -216,6 +216,8 @@
                         android:layout_height="50dp"
                         android:layout_toEndOf="@+id/ivState"
                         android:layout_toRightOf="@+id/ivState"
+
+                        android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ12:34567890 !@#$%^{}|[]\'>?/.,&quot;  &amp;*()_+=-;"
                         android:hint="@string/State"
                         android:inputType="textCapWords"
                         android:singleLine="true" />
@@ -247,7 +249,9 @@
                         android:layout_marginLeft="10dp"
                         android:layout_marginStart="10dp"
                         android:layout_toEndOf="@+id/ivCountry"
+
                         android:layout_toRightOf="@+id/ivCountry"
+                        android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ12:34567890 !@#$%^{}|[]\'>?/.,&quot;  &amp;*()_+=-;"
                         android:hint="@string/Country"
                         android:inputType="textCapWords"
                         android:singleLine="true" />
@@ -276,20 +280,19 @@
                         android:id="@+id/etactivity_add_new_address_receiver_Pincode"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
-                        android:maxLength="6"
-                        android:inputType="number"
                         android:layout_marginLeft="10dp"
                         android:layout_marginStart="10dp"
                         android:layout_toEndOf="@+id/ivPincode"
                         android:layout_toRightOf="@+id/ivPincode"
                         android:hint="@string/Pincode"
                         android:imeOptions="actionDone"
+                        android:inputType="number"
+                        android:maxLength="6"
                         android:singleLine="true" />
                 </RelativeLayout>
 
             </RelativeLayout>
         </ScrollView>
-    </RelativeLayout>
 
     <Button
         android:id="@+id/bactivity_add_new_address_receiver_SaveAddress"

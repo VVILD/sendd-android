@@ -6,7 +6,6 @@ package co.sendd.navdrawer;
 public class Drawer_Item {
     private String title;
 
-
     public Drawer_Item(String title) {
         this.title = title;
     }

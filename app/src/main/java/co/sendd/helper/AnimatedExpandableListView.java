@@ -22,10 +22,6 @@ import android.widget.ExpandableListView;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * This class defines an ExpandableListView which supports animations for
- * collapsing and expanding groups.
- */
 public class AnimatedExpandableListView extends ExpandableListView {
     /*
      * A detailed explanation for how this class works:
@@ -248,12 +244,11 @@ public class AnimatedExpandableListView extends ExpandableListView {
      * adapters used with AnimatedExpandableListView MUST extend this class.
      */
     public static abstract class AnimatedExpandableListAdapter extends BaseExpandableListAdapter {
-        private SparseArray<GroupInfo> groupInfo = new SparseArray<GroupInfo>();
-        private AnimatedExpandableListView parent;
-
         private static final int STATE_IDLE = 0;
         private static final int STATE_EXPANDING = 1;
         private static final int STATE_COLLAPSING = 2;
+        private SparseArray<GroupInfo> groupInfo = new SparseArray<GroupInfo>();
+        private AnimatedExpandableListView parent;
 
         private void setParent(AnimatedExpandableListView parent) {
             this.parent = parent;

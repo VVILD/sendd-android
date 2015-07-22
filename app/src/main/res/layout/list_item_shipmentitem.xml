@@ -21,6 +21,7 @@
             android:src="@drawable/box_sample_icon" />
     </LinearLayout>
 
+
     <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="140dp"
@@ -35,6 +36,8 @@
             android:layout_marginLeft="10dp"
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
+            android:maxLines="1"
+            android:maxWidth="160dp"
             android:text="Name"
             android:textSize="@dimen/TextSize20" />
 
@@ -46,31 +49,32 @@
             android:layout_marginLeft="10dp"
             android:layout_marginStart="10dp"
             android:layout_marginTop="2dp"
+            android:singleLine="true"
             android:text="Address Line 1"
             android:textSize="@dimen/TextSize14" />
 
         <TextView
             android:id="@+id/tvShipmentItem_Recievers_AddressLine2"
-            android:layout_width="170dp"
-
+            android:layout_width="165dp"
             android:layout_height="20dp"
             android:layout_below="@+id/tvShipmentItem_Recievers_AddressLine1"
+            android:layout_marginBottom="5dp"
             android:layout_marginLeft="10dp"
             android:layout_marginStart="10dp"
             android:layout_marginTop="2dp"
-            android:layout_marginBottom="5dp"
+            android:singleLine="true"
             android:text="Address Line 2"
             android:textSize="@dimen/TextSize14" />
 
         <Button
             android:id="@+id/bShipmentItem_Set_ShippingOptions"
             android:layout_width="match_parent"
-            android:layout_marginRight="10dp"
             android:layout_height="25dp"
             android:layout_alignLeft="@+id/tvShipmentItem_Recievers_AddressLine2"
+            android:layout_alignParentBottom="true"
             android:layout_alignStart="@+id/tvShipmentItem_Recievers_AddressLine2"
-             android:layout_alignParentBottom="true"
             android:layout_marginBottom="10dp"
+            android:layout_marginRight="10dp"
             android:background="@drawable/buttons"
             android:text="Set Shipping Options"
             android:textColor="@color/white"
@@ -80,18 +84,18 @@
             android:id="@+id/ivShipmentItem_Delete"
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:src="@drawable/close_icon"
             android:layout_above="@+id/tvShipmentItem_Recievers_AddressLine1"
+            android:layout_alignEnd="@+id/ivShipmentItem_Edit"
             android:layout_alignRight="@+id/ivShipmentItem_Edit"
-            android:layout_alignEnd="@+id/ivShipmentItem_Edit" />
+            android:src="@drawable/close_icon" />
 
         <ImageView
             android:id="@+id/ivShipmentItem_Edit"
             android:layout_width="30dp"
              android:layout_height="30dp"
-            android:src="@drawable/edit_pencil_icon"
-            android:layout_centerVertical="true"
+            android:layout_alignEnd="@+id/bShipmentItem_Set_ShippingOptions"
             android:layout_alignRight="@+id/bShipmentItem_Set_ShippingOptions"
-            android:layout_alignEnd="@+id/bShipmentItem_Set_ShippingOptions" />
+            android:layout_centerVertical="true"
+            android:src="@drawable/edit_pencil_icon" />
     </RelativeLayout>
 </RelativeLayout>

@@ -7,10 +7,11 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
-import co.sendd.gettersandsetters.CompleteOrder;
 
 import java.util.Date;
 import java.util.List;
+
+import co.sendd.gettersandsetters.CompleteOrder;
 
 /**
  * Created by Kuku on 08/03/15.
@@ -57,6 +58,12 @@ public class Db_CompleteOrder extends Model{
     @Column(name = "tracking_no")
     public String tracking_no;
 
+    public static List<Db_CompleteOrder> getAllAddress() {
+        return new Select()
+                .from(Db_CompleteOrder.class)
+                .execute();
+    }
+
     public void AddToDB(CompleteOrder orders) {
         this.Order_id = orders.getOrder_id();
         this.paid = orders.getPaid();
@@ -84,11 +91,6 @@ public class Db_CompleteOrder extends Model{
 
     }
 
-    public static List<Db_CompleteOrder> getAllAddress() {
-        return new Select()
-                .from(Db_CompleteOrder.class)
-                .execute();
-    }
     public void deleteAllItems(){
         new Delete().from(Db_CompleteOrder.class).execute();
     }

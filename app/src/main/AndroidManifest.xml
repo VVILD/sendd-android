@@ -1,16 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-
     package="co.sendd">
-    <uses-feature  android:glEsVersion="0x00020000" android:required="true"/>
+
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!--to access internet -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
-    <uses-permission android:name="android.permission.CALL_PHONE"/>
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="android.permission.READ_SMS" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <!--the Android application can register and receive messages.-->
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <!--to prevent other Android applications from registering and receiving the Android application's messages.-->
+    <permission
+        android:name="co.sendd.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+    <uses-permission android:name="co.sendd.permission.C2D_MESSAGE" />
+
+    <!--the application can keep the processor from sleeping when a message is received.-->
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:name="co.sendd.helper.App"
@@ -18,12 +32,14 @@
         android:icon="@drawable/logo_blue_white"
         android:label="@string/app_name"
         android:largeHeap="true"
-         android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme">
+        <activity
+            android:name="com.wizrocket.android.sdk.InAppNotificationActivity"
+            android:configChanges="orientation|keyboardHidden"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity
             android:name="co.sendd.activity.Activity_SplashScreen"
-            android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/app_name"
-
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -34,22 +50,13 @@
             android:name="co.sendd.activity.Activity_Main"
             android:label="@string/app_name"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name="co.sendd.activity.Activity_ViewPager"
             android:label="@string/app_name"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait"></activity>
-        <activity
-            android:name="co.sendd.activity.Activity_Login"
-            android:label="@string/app_name"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"></activity>
-        <activity
-            android:name="co.sendd.activity.Activity_Signup"
-            android:label="@string/app_name"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
+
         <activity
             android:name="co.sendd.activity.Activity_Add_New_Address_Receiver"
             android:label="@string/app_name"
@@ -58,7 +65,7 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="co.sendd.activity.Activity_Address_Search_Receiver" />
-            </activity>
+        </activity>
         <activity
             android:name="co.sendd.activity.Activity_Address_Search_Receiver"
             android:label="@string/app_name"
@@ -81,7 +88,7 @@
         </activity>
 
 
-        <service android:name="co.sendd.helper.OTP_Check" />
+        <service android:name="co.sendd.helper.SaveImageService" />
 
         <activity
             android:name="co.sendd.activity.Activity_Shipping_Options"
@@ -96,16 +103,25 @@
             android:name="co.sendd.activity.Activity_ThankYou"
             android:label="@string/app_name"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait">
-         </activity>
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="co.sendd.activity.Activity_Reigister_Phone"
+            android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="co.sendd.activity.Activity_Verify_OTP"
+            android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait" />
         <activity
             android:name="co.sendd.activity.Activity_Shipment_details"
             android:label="@string/app_name"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait">
-        </activity>
+            android:screenOrientation="portrait" />
+
         <activity
-            android:name="co.sendd.activity.Activity_Maps"
+            android:name="co.sendd.activity.Activity_Pickup_Address"
             android:label="@string/app_name"
             android:launchMode="singleTask"
             android:screenOrientation="portrait">
@@ -113,15 +129,49 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="co.sendd.activity.Activity_Main" />
         </activity>
-        <meta-data android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
+
         <meta-data
-            android:name="com.google.android.maps.v2.API_KEY"
-            android:value="AIzaSyCKbLLVuhydlB6IIbOUVeI2vEOuxFxAdQI"/>
+            android:name="AA_DB_NAME"
+            android:value="Sendd.db" />
+        <meta-data
+            android:name="AA_DB_VERSION"
+            android:value="5" />
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="3509caf0656d54e96373b76877e6ed87251a17b1" />
-        <meta-data android:name="com.google.android.gms.version"
-        android:value="@integer/google_play_services_version" />
+
+        <service
+            android:name="co.sendd.helper.FetchAddressIntentService"
+            android:exported="false" />
+
+        <meta-data
+            android:name="WIZROCKET_ACCOUNT_ID"
+            android:value="W48-78Z-ZK4Z" />;
+        <meta-data
+            android:name="WIZROCKET_TOKEN"
+            android:value="1ba-b40" />;
+        <receiver
+            android:name="com.wizrocket.android.sdk.InstallReferrerBroadcastReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.android.vending.INSTALL_REFERRER" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name=".GCMClasses.GcmBroadcastReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <category android:name="com.example.gcm" />
+            </intent-filter>
+        </receiver>
+
+        <service android:name=".GCMClasses.GcmIntentService" />
+
     </application>
 </manifest>

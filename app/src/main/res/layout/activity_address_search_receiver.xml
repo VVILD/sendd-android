@@ -28,13 +28,13 @@
         android:layout_height="50dp"
         android:layout_below="@+id/tv_title"
         android:layout_marginTop="15dp"
-        android:singleLine="true"
-        android:imeOptions="actionDone"
         android:background="@color/grey"
         android:drawableEnd="@android:drawable/ic_menu_search"
         android:drawableRight="@android:drawable/ic_menu_search"
-        android:hint="@string/SearchAddressField"
-        android:padding="15dp" />
+        android:hint="Search Locality eg: Andheri"
+        android:imeOptions="actionDone"
+        android:padding="15dp"
+        android:singleLine="true" />
 
 
     <TextView
@@ -63,10 +63,10 @@
         android:background="@android:color/transparent"
         android:enabled="false"
         android:padding="10dp"
-        android:textSize="16sp"
         android:text="Previously added address"
         android:textAllCaps="false"
-        android:textColor="@android:color/darker_gray" />
+        android:textColor="@android:color/darker_gray"
+        android:textSize="16sp" />
 
     <Button
         android:id="@+id/bactivity_address_search_receiver_AddManually"
@@ -76,9 +76,9 @@
         android:layout_alignParentStart="true"
         android:layout_below="@+id/tvOr"
         android:layout_marginTop="2dp"
-        android:textSize="16sp"
         android:background="@drawable/buttons"
         android:text="@string/AddAddressManually"
         android:textAllCaps="false"
-        android:textColor="@color/white" />
+        android:textColor="@color/white"
+        android:textSize="16sp" />
 </RelativeLayout>

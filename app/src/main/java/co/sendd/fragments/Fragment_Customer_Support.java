@@ -9,8 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import co.sendd.activity.Activity_Main;
 import co.sendd.R;
+import co.sendd.activity.Activity_Main;
 
 /**
  * Created by Kuku on 18/02/15.
@@ -31,7 +31,6 @@ public class Fragment_Customer_Support  extends Fragment{
         super.onViewCreated(view, savedInstanceState);
         ((Activity_Main) getActivity()).setActionBarTitle("Customer Support");
         Activity_Main.exit =false;
-        Activity_Main.noShipmentTv.setVisibility(View.GONE);
         call =(TextView)view.findViewById(R.id.callphone);
         call.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -51,7 +50,6 @@ public class Fragment_Customer_Support  extends Fragment{
         super.onResume();
         ((Activity_Main) getActivity()).setActionBarTitle("Customer Support");
         Activity_Main.exit =false;
-        Activity_Main.noShipmentTv.setVisibility(View.GONE);
         if (Activity_Main.mProgress!=null && Activity_Main.mProgress.isShowing()){
             Activity_Main.mProgress.dismiss();
         }

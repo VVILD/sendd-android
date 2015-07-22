@@ -28,21 +28,24 @@ import retrofit.converter.GsonConverter;
  * Created by Kuku on 17/02/15.
  */
 public class NetworkUtils {
+    private static final String[] DATE_FORMATS = new String[]{
+            "yyyy-MM-dd"
+    };
+    public static String END_POINT = "http://128.199.159.90/api/v2/";
+    Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd")
+            .registerTypeAdapter(Date.class, new DateDeserializer())
+            .create();
     private Context mcontext;
+//    public static String END_POINT="http://128.199.185.217/api/v2/";
 
     public NetworkUtils(Context c) {
         this.mcontext = c;
     }
 
-    private static final String[] DATE_FORMATS = new String[]{
-            "yyyy-MM-dd"
-    };
-
-    public static String END_POINT="http://128.199.159.90/api/v1/";
-    Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd")
-            .registerTypeAdapter(Date.class, new DateDeserializer())
-            .create();
-
+    public static void hideSoftKeyboard(Activity activity) {
+        InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
+    }
 
     public Boolean isnetconnected() {
         ConnectivityManager connectionManager = (ConnectivityManager) mcontext.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -78,10 +81,5 @@ public class NetworkUtils {
             throw new JsonParseException("Unparseable date: \"" + jsonElement.getAsString()
                     + "\". Supported formats: " + Arrays.toString(DATE_FORMATS));
         }
-    }
-
-    public static void hideSoftKeyboard(Activity activity) {
-        InputMethodManager inputMethodManager = (InputMethodManager) activity.getSystemService(Activity.INPUT_METHOD_SERVICE);
-        inputMethodManager.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(), 0);
     }
 }

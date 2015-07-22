@@ -6,13 +6,13 @@
     >
 
     <TextView
-        android:background="@drawable/customborder"
         android:id="@+id/lblListHeader"
         android:layout_width="fill_parent"
-        android:layout_height="40dp"
+        android:layout_height="60dp"
+        android:background="@drawable/customborder"
         android:gravity="center_vertical"
-        android:paddingLeft="?android:attr/expandableListPreferredItemPaddingLeft"
-        android:textSize="16dp"
-        android:textColor="@android:color/darker_gray" />
+        android:padding="10dp"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="16dp" />
 
 </LinearLayout>

@@ -3,7 +3,9 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     android:orientation="vertical">
+
     <include
         android:id="@+id/activity_update_address_receiver_toolbar"
         layout="@layout/toolbar_drop_address" />
@@ -11,24 +13,23 @@
 
     <RelativeLayout
         android:id="@+id/rlmain"
-        android:layout_below="@+id/activity_update_address_receiver_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/activity_update_address_receiver_toolbar"
         android:orientation="vertical"
         android:padding="15dp">
 
         <ScrollView
-            android:layout_marginBottom="35dp"
             android:layout_width="match_parent"
-            android:layout_height="fill_parent">
+            android:layout_height="fill_parent"
+            android:layout_marginBottom="35dp">
 
             <RelativeLayout
 
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
                 android:layout_marginBottom="35dp"
-                >
+                android:orientation="vertical">
 
                 <RelativeLayout
                     android:id="@+id/rlName"
@@ -41,8 +42,8 @@
                     <ImageView
 
                         android:id="@+id/ivName"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
                         android:layout_alignParentLeft="true"
                         android:layout_alignParentStart="true"
                         android:layout_centerVertical="true"
@@ -55,7 +56,9 @@
                         android:layout_marginLeft="10dp"
                         android:layout_marginStart="10dp"
                         android:layout_toEndOf="@+id/ivName"
+
                         android:layout_toRightOf="@+id/ivName"
+                        android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ12:34567890 !@#$%^{}|[]\'>?/.,&quot;  &amp;*()_+=-;"
                         android:hint="Name"
                         android:singleLine="true" />
                 </RelativeLayout>
@@ -72,8 +75,8 @@
                     <ImageView
 
                         android:id="@+id/ivPhone"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
                         android:layout_alignParentLeft="true"
                         android:layout_alignParentStart="true"
                         android:layout_centerVertical="true"
@@ -104,8 +107,8 @@
                     <ImageView
 
                         android:id="@+id/ivflatno"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
                         android:layout_alignParentLeft="true"
                         android:layout_alignParentStart="true"
                         android:layout_centerVertical="true"
@@ -119,6 +122,7 @@
                         android:layout_marginStart="10dp"
                         android:layout_toEndOf="@+id/ivflatno"
                         android:layout_toRightOf="@+id/ivflatno"
+                        android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ12:34567890 !@#$%^{}|[]\'>?/.,&quot;  &amp;*()_+=-;"
                         android:hint="Flat no."
                         android:singleLine="true" />
                 </RelativeLayout>
@@ -142,15 +146,16 @@
                         android:layout_centerVertical="true" />
 
                     <EditText
+
                         android:id="@+id/etactivity_update_address_Locality"
                         android:layout_width="match_parent"
-                        android:layout_height="50dp"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginStart="10dp"
+                        android:layout_height="wrap_content"
                         android:layout_toEndOf="@+id/ivCountry"
                         android:layout_toRightOf="@+id/ivCountry"
+
+                        android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ12:34567890 !@#$%^{}|[]\'>?/.,&quot;  &amp;*()_+=-;"
                         android:hint="Locality"
-                        android:singleLine="true" />
+                        android:singleLine="false" />
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -166,6 +171,7 @@
                         android:id="@+id/ivAddress"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
+
                         android:layout_alignParentLeft="true"
                         android:layout_alignParentStart="true"
                         android:layout_centerVertical="true" />
@@ -174,10 +180,10 @@
                         android:id="@+id/etactivity_update_address_City"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginStart="10dp"
                         android:layout_toEndOf="@+id/ivAddress"
+
                         android:layout_toRightOf="@+id/ivAddress"
+                        android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ12:34567890 !@#$%^{}|[]\'>?/.,&quot;  &amp;*()_+=-;"
                         android:hint="City" />
                 </RelativeLayout>
 
@@ -203,11 +209,11 @@
                         android:id="@+id/etactivity_update_address_State"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
-                        android:layout_marginLeft="10dp"
-                        android:layout_marginStart="10dp"
                         android:layout_toEndOf="@+id/ivCity"
                         android:layout_toRightOf="@+id/ivCity"
+                        android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ12:34567890 !@#$%^{}|[]\'>?/.,&quot;  &amp;*()_+=-;"
                         android:hint="State"
+
                         android:singleLine="true" />
                 </RelativeLayout>
 
@@ -223,12 +229,12 @@
 
                     <ImageView
                         android:id="@+id/ivState"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
                         android:layout_alignParentLeft="true"
                         android:layout_alignParentStart="true"
-                        android:src="@drawable/country_icon"
-                        android:layout_centerVertical="true" />
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/country_icon" />
 
                     <EditText
                         android:id="@+id/etactivity_update_address_Country"
@@ -238,6 +244,8 @@
                         android:layout_marginStart="10dp"
                         android:layout_toEndOf="@+id/ivState"
                         android:layout_toRightOf="@+id/ivState"
+
+                        android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ12:34567890 !@#$%^{}|[]\'>?/.,&quot;  &amp;*()_+=-;"
                         android:hint="Country"
                         android:singleLine="true" />
                 </RelativeLayout>
@@ -254,8 +262,8 @@
 
                     <ImageView
                         android:id="@+id/ivPincode"
-                        android:layout_width="40dp"
-                        android:layout_height="40dp"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
                         android:layout_alignParentLeft="true"
                         android:layout_alignParentStart="true"
                         android:layout_centerVertical="true"
@@ -265,19 +273,17 @@
                         android:id="@+id/etactivity_update_address_Pincode"
                         android:layout_width="match_parent"
                         android:layout_height="50dp"
-                        android:maxLength="6"
-                        android:inputType="number"
                         android:layout_marginLeft="10dp"
                         android:layout_marginStart="10dp"
                         android:layout_toEndOf="@+id/ivPincode"
                         android:layout_toRightOf="@+id/ivPincode"
                         android:hint="Pincode"
+                        android:inputType="number"
+                        android:maxLength="6"
                         android:singleLine="true" />
                 </RelativeLayout>
             </RelativeLayout>
-
         </ScrollView>
-
     </RelativeLayout>
 
 

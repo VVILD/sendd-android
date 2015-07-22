@@ -24,7 +24,43 @@ public class CompleteOrder {
     private String pickup_address;
     private String pickup_pincode;
     private String cost;
+    private String real_tracking_no;
+    private String way;
+    private String method;
+    private String email;
     private String tracking_no;
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getReal_tracking_no() {
+        return real_tracking_no;
+    }
+
+    public void setReal_tracking_no(String real_tracking_no) {
+        this.real_tracking_no = real_tracking_no;
+    }
+
+    public String getWay() {
+        return way;
+    }
+
+    public void setWay(String way) {
+        this.way = way;
+    }
+
+    public String getMethod() {
+        return method;
+    }
+
+    public void setMethod(String method) {
+        this.method = method;
+    }
 
     public String getOrder_id() {
         return Order_id;

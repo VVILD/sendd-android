@@ -2,21 +2,25 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:layout_margin="20dp"
-    android:background="@android:color/white"
-    android:orientation="vertical">
-<ImageView
-    android:layout_width="100dp"
-    android:layout_height="100dp"
-    android:src="@drawable/faq_icon"
-    android:layout_gravity="center_horizontal" />
+    android:background="@color/white"
+    android:orientation="vertical"
+
+    android:padding="20dp">
+
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/faq_icon" />
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:textSize="20sp"
-        android:textColor="@color/black"
         android:gravity="center"
-        android:text="Frequently Asked Questions"/>
+        android:text="Frequently Asked Questions"
+        android:textColor="@color/black"
+        android:textSize="20sp" />
+
     <co.sendd.helper.AnimatedExpandableListView
         android:id="@+id/lvExp"
         android:layout_width="match_parent"

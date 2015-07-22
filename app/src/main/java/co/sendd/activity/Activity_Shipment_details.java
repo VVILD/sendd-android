@@ -2,9 +2,9 @@ package co.sendd.activity;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,12 +16,6 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import co.sendd.R;
-import co.sendd.databases.Db_CompleteOrder;
-import co.sendd.gettersandsetters.ShipmentDetails;
-import co.sendd.gettersandsetters.TrackingDataList;
-import co.sendd.helper.NetworkUtils;
-
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
@@ -30,9 +24,17 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
+import co.sendd.R;
+import co.sendd.databases.Db_CompleteOrder;
+import co.sendd.gettersandsetters.ShipmentDetails;
+import co.sendd.gettersandsetters.TrackingDataList;
+import co.sendd.helper.NetworkUtils;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -45,84 +47,144 @@ public class Activity_Shipment_details extends BaseActivity {
     TextView Name, Address, Time, Bill;
     ImageView ItemImage;
     ProgressDialog pd;
-    ArrayList<TrackingDataList> list = new ArrayList<TrackingDataList>(1);
+    ArrayList<TrackingDataList> list = new ArrayList<>(1);
     ListView TrackingListView;
     Tracking_adapter adapter;
     ScrollView scrollView;
+
+    public static void setListViewHeightBasedOnChildren(ListView listView) {
+        ListAdapter listAdapter = listView.getAdapter();
+        if (listAdapter == null) {
+            // pre-condition
+            return;
+        }
+
+        int totalHeight = listView.getPaddingTop() + listView.getPaddingBottom();
+        for (int i = 0; i < listAdapter.getCount(); i++) {
+            View listItem = listAdapter.getView(i, null, listView);
+            if (listItem instanceof ViewGroup) {
+                listItem.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+            }
+            listItem.measure(0, 0);
+            totalHeight += listItem.getMeasuredHeight();
+        }
+
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
+        listView.setLayoutParams(params);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_previous_shipment_details);
-        pd = new ProgressDialog(Activity_Shipment_details.this);
-        pd.setMessage("Loading, Please wait...");
-        pd.setCancelable(false);
-        pd.setIndeterminate(true);
-        pd.show();
-        scrollView= (ScrollView)findViewById(R.id.scroll);
-
+        scrollView = (ScrollView) findViewById(R.id.scroll);
         TrackingListView = (ListView) findViewById(R.id.ItemTrackingList);
-//        setListViewHeightBasedOnChildren(TrackingListView);
         DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
                 .cacheInMemory(true)
                 .cacheOnDisk(true)
                 .build();
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this).defaultDisplayImageOptions(defaultOptions).build();
-        ImageLoader.getInstance().init(config);
+        if (ImageLoader.getInstance() == null)
+            ImageLoader.getInstance().init(config);
         Name = (TextView) findViewById(R.id.tvName);
         Address = (TextView) findViewById(R.id.tvAddress);
         Time = (TextView) findViewById(R.id.tvTime);
         Bill = (TextView) findViewById(R.id.tvRate);
 
         ItemImage = (ImageView) findViewById(R.id.ivItem_Image_preview);
-        ImageLoader.getInstance().displayImage("file://" + getIntent().getStringExtra("imageURI"), ItemImage);
+
+        try {
+            if (getIntent().getStringExtra("imageURI").equals("http://128.199.159.90/static")) {
+                ImageLoader.getInstance().displayImage("drawable://" + R.drawable.box_sample_icon, ItemImage);
+            } else {
+                if (getIntent().getStringExtra("imageURI").contains("http")) {
+                    ImageLoader.getInstance().displayImage(getIntent().getStringExtra("imageURI"), ItemImage);
+
+                } else {
+                    ImageLoader.getInstance().displayImage("file://" + getIntent().getStringExtra("imageURI"), ItemImage);
+
+                }
+            }
+        } catch (NullPointerException e) {
+
+        }
         Toolbar toolbar = (Toolbar) findViewById(R.id.Main_toolbar);
         setSupportActionBar(toolbar);
         toolbar.setNavigationIcon(R.drawable.arrow_back_icon_small);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-                                                 @Override
-                                                 public void onClick(View v) {
-                                                     finish();
-                                                     Activity_Shipment_details.this.overridePendingTransition(R.animator.pull_in_left, R.animator.push_out_right);
-                                                 }
-                                             }
+        toolbar.setNavigationOnClickListener(
+                new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent i = new Intent(Activity_Shipment_details.this, Activity_Main.class);
+                        i.putExtra("openpreviousBooking", true);
+                        Activity_Shipment_details.this.startActivity(i);
+                        finish();
+                        Activity_Shipment_details.this.overridePendingTransition(R.animator.pull_in_left, R.animator.push_out_right);
+                    }
+                }
         );
         final NetworkUtils mnetworkutils = new NetworkUtils(Activity_Shipment_details.this);
         if (mnetworkutils.isnetconnected()) {
-            mnetworkutils.getapi().getShipmentDetails(getIntent().getIntExtra("tracking_no", 1000000), new Callback<ShipmentDetails>() {
+            pd = new ProgressDialog(Activity_Shipment_details.this);
+            pd.setMessage("Loading Details, Please wait...");
+            pd.setCancelable(false);
+            pd.setIndeterminate(true);
+            pd.show();
+            mnetworkutils.getapi().getShipmentDetails(getIntent().getStringExtra("tracking_no"), new Callback<ShipmentDetails>() {
                 @Override
                 public void success(ShipmentDetails shipmentDetails, Response response) {
-                     if(shipmentDetails.getStatus().equals("C")) {
-                         Db_CompleteOrder completeOrder_DB = new Db_CompleteOrder();
-                        completeOrder_DB.updateStatus(getIntent().getStringExtra("imageURI"), shipmentDetails.getStatus());
-                    }
-                    Name.setText(shipmentDetails.getDrop_name());
-                    Address.setText(shipmentDetails.getDrop_address());
-                    Time.setText(getIntent().getStringExtra("datetime"));
-                    if(shipmentDetails.getPrice()==null){
-                    Bill.setText("Total Bill Rs.- Not yet Generated");
-
-                    }else
-                    Bill.setText("Total Bill Rs." + shipmentDetails.getPrice());
                     try {
-                        if (shipmentDetails.getTracking_data() != null) {
-                            JSONArray arr = new JSONArray(shipmentDetails.getTracking_data());
-                            for (int i = 0; i < arr.length(); i++) {
-                                JSONObject c = (JSONObject) arr.get(i);
-                                list.add(updateList(c));
+                        if (shipmentDetails.getStatus().equals("C")) {
+                            Db_CompleteOrder completeOrder_DB = new Db_CompleteOrder();
+                            completeOrder_DB.updateStatus(getIntent().getStringExtra("imageURI"), shipmentDetails.getStatus());
+                        }
+                        if (shipmentDetails.getDrop_name() != null)
+                            Name.setText(shipmentDetails.getDrop_name());
+                        else
+                            Name.setText(" ");
+                        if (!shipmentDetails.getDrop_address().contains("None,None"))
+                            Address.setText(shipmentDetails.getDrop_address());
+                        else
+                            Address.setText(" ");
 
+                        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm:ss");
+                        SimpleDateFormat sdf2 = new SimpleDateFormat("hh:mm aa");
+                        Date dt = new Date();
+                        if (shipmentDetails.getTime() != null) {
+                            try {
+                                dt = sdf.parse(shipmentDetails.getTime());
+                            } catch (ParseException e) {
+                                e.printStackTrace();
                             }
                         }
-                         adapter = new Tracking_adapter(Activity_Shipment_details.this, R.layout.list_item_allshipments, list);
-                        TrackingListView.setAdapter(adapter);
-                        setListViewHeightBasedOnChildren(TrackingListView);
 
+                        Time.setText("Time: " + sdf2.format(dt) + "  Date: " + shipmentDetails.getDate());
+                        if (shipmentDetails.getPrice() == null) {
+                            Bill.setText("Total Bill Rs. - Not yet Generated");
+                        } else
+                            Bill.setText("Total Bill Rs." + shipmentDetails.getPrice());
+                        try {
+                            if (shipmentDetails.getTracking_data() != null) {
+                                JSONArray arr = new JSONArray(shipmentDetails.getTracking_data());
+                                for (int i = 0; i < arr.length(); i++) {
+                                    JSONObject c = (JSONObject) arr.get(i);
+                                    list.add(updateList(c));
+                                }
+                            }
+                            adapter = new Tracking_adapter(Activity_Shipment_details.this, R.layout.list_item_allshipments, list);
+                            TrackingListView.setAdapter(adapter);
+                            setListViewHeightBasedOnChildren(TrackingListView);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
 
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                        pd.dismiss();
+
+                    } catch (RuntimeException ee) {
+                        pd.dismiss();
+
                     }
-
-                    pd.dismiss();
                 }
 
                 @Override
@@ -137,6 +199,9 @@ public class Activity_Shipment_details extends BaseActivity {
 
     @Override
     public void onBackPressed() {
+        Intent i = new Intent(Activity_Shipment_details.this, Activity_Main.class);
+        i.putExtra("openpreviousBooking", true);
+        this.startActivity(i);
         finish(); // finish activity
         Activity_Shipment_details.this.overridePendingTransition(R.animator.fade_in, R.animator.fade_out);
     }
@@ -187,7 +252,6 @@ public class Activity_Shipment_details extends BaseActivity {
 
         @Override
         public TrackingDataList getItem(int position) {
-            Log.i("asdasd",String.valueOf(position));
             return super.getItem(position);
         }
 
@@ -224,26 +288,7 @@ public class Activity_Shipment_details extends BaseActivity {
             return convertView;
         }
     }
-    public static void setListViewHeightBasedOnChildren(ListView listView) {
-        ListAdapter listAdapter = listView.getAdapter();
-        if (listAdapter == null) {
-            // pre-condition
-            return;
-        }
 
-        int totalHeight = listView.getPaddingTop() + listView.getPaddingBottom();
-        for (int i = 0; i < listAdapter.getCount(); i++) {
-            View listItem = listAdapter.getView(i, null, listView);
-            if (listItem instanceof ViewGroup) {
-                listItem.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-            }
-            listItem.measure(0, 0);
-            totalHeight += listItem.getMeasuredHeight();
-        }
-
-        ViewGroup.LayoutParams params = listView.getLayoutParams();
-        params.height = totalHeight + (listView.getDividerHeight() * (listAdapter.getCount() - 1));
-        listView.setLayoutParams(params);
-    }
 }
+
 

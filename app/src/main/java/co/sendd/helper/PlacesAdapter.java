@@ -1,7 +1,6 @@
 package co.sendd.helper;
 
 import android.content.Context;
-import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
@@ -9,7 +8,7 @@ import android.widget.Filterable;
 import java.util.ArrayList;
 
 /**
- * Created by Adapsys on 2/25/2015.
+ * Created by kuku on 2/25/2015.
  */
 public class PlacesAdapter extends ArrayAdapter<String> implements Filterable {
     private ArrayList<String> resultList;
@@ -30,18 +29,14 @@ public class PlacesAdapter extends ArrayAdapter<String> implements Filterable {
 
     @Override
     public Filter getFilter() {
-        Filter filter = new Filter() {
+        return new Filter() {
             @Override
             protected FilterResults performFiltering(CharSequence constraint) {
-                FilterResults filterResults = new Filter.FilterResults();
+                FilterResults filterResults = new FilterResults();
                 if (constraint != null) {
-                    // Retrieve the autocomplete results.
                     resultList = GetPlaceSuggestions.autocomplete(constraint.toString());
-
-                    // Assign the data to the FilterResults
                     filterResults.values = resultList;
                     filterResults.count = resultList.size();
-                    Log.d("result from server", resultList.toString());
                 }
                 return filterResults;
             }
@@ -55,6 +50,5 @@ public class PlacesAdapter extends ArrayAdapter<String> implements Filterable {
                     notifyDataSetInvalidated();
                 }
             }};
-        return filter;
     }
 }

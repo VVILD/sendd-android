@@ -6,13 +6,10 @@
 
     <TextView
         android:id="@+id/lblListItem"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:background="@drawable/customborder"
-        android:paddingLeft="?android:attr/expandableListPreferredItemPaddingLeft"
+        android:padding="10dp"
         android:textColor="@android:color/holo_blue_dark"
         android:textSize="14dp" />
 

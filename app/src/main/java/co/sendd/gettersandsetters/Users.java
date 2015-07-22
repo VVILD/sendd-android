@@ -10,6 +10,16 @@ public class Users {
     private String apikey;
     private String msg;
 
+    private String valid;
+
+    public String getValid() {
+        return valid;
+    }
+
+    public void setValid(String valid) {
+        this.valid = valid;
+    }
+
     public String getMsg() {
         return msg;
     }

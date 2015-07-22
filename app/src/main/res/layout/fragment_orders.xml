@@ -2,64 +2,123 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity"
-    android:animateLayoutChanges="true">
-<RelativeLayout
-    android:id="@+id/setlocationrl"
-    android:layout_width="match_parent"
-    android:layout_height="40dp">
-    <TextView
-        android:textColor="@color/black"
-        android:text="Set your pickup location "
+    tools:context=".MainActivity">
+
+    <FrameLayout
+        android:id="@+id/frame_container"
         android:layout_width="match_parent"
-        android:gravity="right"
-        android:layout_toLeftOf="@+id/upicon"
-        android:textSize="18sp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginBottom="4dp" />
-    <ImageView
-        android:id="@+id/upicon"
-        android:layout_alignParentRight="true"
-        android:layout_width="30dp"
-        android:layout_marginRight="15dp"
-        android:layout_height="30dp"
-        android:src="@drawable/uparrow_icon"/>
+        android:layout_height="match_parent"
+        android:layout_below="@id/Main_toolbar">
+
+        <TextView
+            android:id="@+id/noshiptv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="No Parcels Added Yet"
+            android:textSize="18sp" />
+    </FrameLayout>
+
+    <RelativeLayout
+        android:id="@+id/setlocationrl"
+        android:layout_width="match_parent"
+        android:layout_height="40dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginBottom="4dp"
+            android:layout_toLeftOf="@+id/upicon"
+            android:gravity="right"
+            android:text="Set your pickup location "
+            android:textColor="@color/black"
+            android:textSize="18sp" />
+
+        <ImageView
+            android:id="@+id/upicon"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="15dp"
+            android:src="@drawable/uparrow_icon" />
     </RelativeLayout>
+
+
     <Button
-        android:drawableRight="@drawable/add_plus_white_icon"
         android:id="@+id/bFragment_Orders_AddShipment"
-        android:layout_width="250dp"
-        android:paddingRight="20dp"
+        android:layout_width="200dp"
         android:layout_height="50dp"
-        android:textSize="20sp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="45dp"
         android:background="@drawable/buttons"
-        android:text="ADD SHIPMENTS"
-        android:textColor="@color/white" />
+        android:drawableRight="@drawable/add_plus_white_icon"
+        android:paddingRight="20dp"
+        android:text="ADD PARCEL"
+        android:textColor="@color/white"
+        android:textSize="20sp" />
+
 
     <ListView
         android:id="@+id/lvFragment_Orders_Items_List"
         android:layout_width="match_parent"
         android:layout_height="fill_parent"
+        android:layout_above="@+id/rlPromoCode"
         android:layout_below="@+id/bFragment_Orders_AddShipment"
-        android:layout_marginBottom="60dp"
-        android:layout_marginTop="20dp"/>
+        android:layout_marginBottom="10dp"
+        android:layout_marginTop="20dp" />
 
     <LinearLayout
+        android:id="@+id/rlPromoCode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/bottomButtons"
+        android:layout_marginBottom="5dp"
+        android:background="#fafafa"
+        android:gravity="center"
+        android:orientation="horizontal"
+        android:weightSum="100">
+
+        <TextView
+            android:id="@+id/tvPromomessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="90"
+            android:gravity="center_horizontal"
+            android:text="Do you have a Promocode?"
+            android:textSize="14sp" />
+
+        <ImageView
+            android:id="@+id/crossicon"
+            android:layout_width="40dp"
+            android:layout_height="30dp"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/tvPromomessage"
+            android:layout_toRightOf="@+id/tvPromomessage"
+            android:layout_weight="10"
+            android:src="@drawable/dialog_crossicon"
+            android:visibility="invisible" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/bottomButtons"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:orientation="horizontal"
+        android:visibility="invisible"
         android:weightSum="100">
 
         <Button
+
             android:id="@+id/bFragment_Orders_PickNow"
             android:layout_width="match_parent"
             android:layout_height="50dp"

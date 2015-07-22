@@ -1,35 +1,28 @@
 package co.sendd.activity;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 
-import co.sendd.helper.Utils;
 import co.sendd.R;
+import co.sendd.helper.Utils;
 
-import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 
 public  class Activity_SplashScreen extends Activity {
     private Handler handler;
     @Override
-    protected void attachBaseContext(Context newBase) {
-        super.attachBaseContext(new CalligraphyContextWrapper(newBase));
-    }
-
-    @Override
     protected  void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
-        handler = new Handler() {
+
+        handler = new Handler(new Handler.Callback() {
             @Override
-            public void handleMessage(Message msg) {
-                super.handleMessage(msg);
+            public boolean handleMessage(Message msg) {
                 Utils utils = new Utils(Activity_SplashScreen.this);
-                if (utils.isRegisterd()) {
+                if (utils.getvalue("Tutorial_Displayed").equals("true")) {
                     Intent MainActivity = new Intent(Activity_SplashScreen.this, Activity_Main.class);
                     startActivity(MainActivity);
                     Activity_SplashScreen.this.overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
@@ -40,12 +33,13 @@ public  class Activity_SplashScreen extends Activity {
                     Activity_SplashScreen.this.overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
                     finish();
                 }
+                return true;
             }
-        };
+        });
         Thread timer = new Thread() {
             public void run() {
                 try {
-                    sleep(1000);
+                    sleep(500);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } finally {
@@ -56,7 +50,6 @@ public  class Activity_SplashScreen extends Activity {
         };
         timer.start();
     }
-
     protected void onPause() {
         super.onPause();
         finish();

@@ -7,9 +7,10 @@ import com.activeandroid.annotation.Column;
 import com.activeandroid.annotation.Table;
 import com.activeandroid.query.Delete;
 import com.activeandroid.query.Select;
-import co.sendd.gettersandsetters.ItemList;
 
 import java.util.List;
+
+import co.sendd.gettersandsetters.ItemList;
 
 /**
  * Created by Kuku on 21/02/15.
@@ -41,6 +42,12 @@ public class Db_Item_List extends Model {
     @Column(name = "setshippingoption")
     public String setshippingoption;
 
+    public static List<Db_Item_List> getAllItems(String Orderid) {
+        return new Select()
+                .from(Db_Item_List.class)
+                .where("orderid= ?", Orderid)
+                .execute();
+    }
 
     public void AddToDB(ItemList itemlist) {
         Log.i("Inside AddToDB", "Item Added");
@@ -59,6 +66,7 @@ public class Db_Item_List extends Model {
         this.save();
         Log.i("Inside AddToDB", "Item Added");
     }
+
     public void updateShippingItem(String shippingtype ,String imageuri ) {
         Db_Item_List itmeListDB = new Select()
                 .from(Db_Item_List.class).where("image_uri = ?",imageuri)
@@ -87,6 +95,22 @@ public class Db_Item_List extends Model {
         }
 
     }
+
+    public boolean isItemNull(String imageuri) {
+        Db_Item_List itmeListDB = new Select()
+                .from(Db_Item_List.class).where("image_uri = ?", imageuri)
+                .executeSingle();
+        if (itmeListDB != null) {
+            if (itmeListDB.locality == null) {
+                Log.i("Called in DB", "yes:-)");
+                return true;
+            } else
+                return false;
+        } else {
+            return false;
+        }
+    }
+
     public void updateImage(ItemList itemlist ,String imageuri) {
 
         Db_Item_List itmeListDB = new Select()
@@ -99,16 +123,11 @@ public class Db_Item_List extends Model {
         }
 
     }
+
     public void deleteItem(String orderid,String image_uri){
         new Delete().from(Db_Item_List.class).where("orderid = ?", orderid).where("image_uri=?",image_uri).execute();
     }
 
-    public static List<Db_Item_List> getAllItems(String Orderid) {
-        return new Select()
-                .from(Db_Item_List.class)
-                .where("orderid= ?",Orderid)
-                .execute();
-    }
     public void deleteAllItems(){
         new Delete().from(Db_Item_List.class).execute();
     }

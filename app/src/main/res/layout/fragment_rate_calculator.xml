@@ -12,28 +12,39 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:gravity="center"
-        android:text="Sending from Powai(400076) \n \n Where do you want to sendd? "
+        android:text="Sending from Powai(400076) \n Where do you want to sendd? "
         android:textSize="18sp" />
 
+    <TextView
+        android:id="@+id/tv11111"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv101"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="25dp"
+        android:gravity="center"
+        android:text="For International Parcel Calls us at 8080028081"
+        android:textSize="14sp" />
     <RelativeLayout
         android:id="@+id/rl000"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/tv101"
+        android:layout_below="@+id/tv11111"
         android:orientation="vertical">
 
         <RelativeLayout
             android:id="@+id/rl001"
             android:layout_width="wrap_content"
-            android:layout_height="80dp"
+            android:layout_height="60dp"
             android:layout_centerHorizontal="true"
+            android:layout_marginTop="5dp"
             android:orientation="horizontal"
             android:padding="10dp"
             android:weightSum="100">
 
             <TextView
                 android:id="@+id/tv000"
-                android:layout_width="120dp"
+                android:layout_width="wrap_content"
                 android:layout_height="40dp"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
@@ -41,7 +52,7 @@
                 android:layout_gravity="top"
                 android:layout_weight="80"
                 android:gravity="center_vertical"
-                android:text="Pincode/City:"
+                android:text="Pincode:"
                 android:textColor="@color/black"
                 android:textSize="18sp" />
 
@@ -51,8 +62,9 @@
                 android:layout_height="40dp"
                 android:layout_toRightOf="@+id/tv000"
                 android:background="@color/grey"
-                android:hint="Pincode/City "
                 android:capitalize="words"
+                android:hint="Pincode"
+                android:inputType="number"
                 android:paddingLeft="10dp"
                 android:singleLine="true" />
         </RelativeLayout>
@@ -127,12 +139,13 @@
             android:background="#FFFFFF">
 
             <TableLayout
+
                 android:id="@+id/hideRl"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:gravity="center"
-                android:visibility="invisible">
+                android:visibility="gone">
 
                 <TableRow>
 
@@ -171,57 +184,23 @@
                         android:id="@+id/tvtimeStandard"
                         android:gravity="left"
                         android:padding="5dp"
-                        android:text="5-6days"
+                        android:text=""
                         android:textSize="13dp" />
 
                     <TextView
                         android:id="@+id/tvcostStandard"
                         android:gravity="left"
                         android:padding="5dp"
-                        android:text="20,000"
+                        android:text=""
                         android:textSize="13sp" />
 
                 </TableRow>
 
-                <TableRow>
-
-                    <TextView
-                        android:id="@+id/tvBulk"
-
-                        android:gravity="left"
-                        android:padding="5dp"
-
-                        android:text="Bulk  (min 6 kgs)"
-                        android:textSize="13sp" />
-
-                    <TextView
-                        android:id="@+id/tvtimeBulk"
-
-
-                        android:gravity="left"
-
-                        android:padding="5dp"
-                        android:text="2-3days"
-                        android:textSize="13dp" />
-
-                    <TextView
-                        android:id="@+id/tvcostBulk"
-                        android:layout_below="@+id/tvBulk"
-
-                        android:layout_toRightOf="@+id/tvcostPremimum"
-
-                        android:gravity="left"
-                        android:padding="5dp"
-                        android:text="200000"
-                        android:textSize="13sp" />
-                </TableRow>
 
                 <TableRow>
 
                     <TextView
                         android:id="@+id/tvPremimum"
-
-
                         android:gravity="left"
                         android:padding="5dp"
                         android:text="Premium"
@@ -235,7 +214,7 @@
                         android:gravity="left"
                         android:padding="5dp"
 
-                        android:text="1-2days"
+                        android:text=""
                         android:textSize="13dp" />
 
                     <TextView
@@ -245,9 +224,37 @@
                         android:gravity="left"
 
                         android:padding="5dp"
-                        android:text="20,000"
+                        android:text=""
                         android:textSize="13dp" />
 
+                </TableRow>
+                <TableRow>
+
+                    <TextView
+                        android:id="@+id/tvBulk"
+                        android:gravity="left"
+                        android:padding="5dp"
+                        android:text="Bulk  (min 6 kgs)"
+                        android:textSize="13sp" />
+
+                    <TextView
+                        android:id="@+id/tvtimeBulk"
+
+
+                        android:gravity="left"
+
+                        android:padding="5dp"
+                        android:text=""
+                        android:textSize="13dp" />
+
+                    <TextView
+                        android:id="@+id/tvcostBulk"
+                        android:layout_below="@+id/tvBulk"
+                        android:layout_toRightOf="@+id/tvcostPremimum"
+                        android:gravity="start"
+                        android:padding="5dp"
+                        android:text=""
+                        android:textSize="13sp" />
                 </TableRow>
             </TableLayout>
         </HorizontalScrollView>
