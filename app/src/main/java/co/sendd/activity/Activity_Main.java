@@ -126,7 +126,6 @@ public class Activity_Main extends BaseActivity {
             if (!utils.getvalue("Registered_on_server").equals("yes")) {
                 try {
 
-
                     if (!regid.isEmpty()) {
                         final NetworkUtils mnetworkutils = new NetworkUtils(this);
                         RegisterUser ru = new RegisterUser();
@@ -323,7 +322,7 @@ public class Activity_Main extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        checkPlayServices();
+        //checkPlayServices();
         wr.activityResumed(this);
         navDrawerItems = new ArrayList<>();
         Utils utils = new Utils(Activity_Main.this);

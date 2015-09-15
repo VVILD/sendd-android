@@ -25,11 +25,6 @@ public class Promo {
         this.promomsg = promomsg;
     }
 
-
-    public String getPhone() {
-        return phone;
-    }
-
     public void setPhone(String phone) {
         this.phone = phone;
     }

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- From: file:/Users/harshkaranpuria/Desktop/Sendd/library/build/intermediates/bundles/debug/res/values/values.xml -->
+    <!-- From: file:/Users/harshkaranpuria/Desktop/MAIN%20PROJECTS/Sendd/library/build/intermediates/bundles/debug/res/values/values.xml -->
     <eat-comment/>
     <attr format="boolean" name="centered"/>
     <attr format="color" name="selectedColor"/>

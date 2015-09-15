@@ -110,6 +110,7 @@ public class Activity_Reigister_Phone extends BaseActivity {
                                 public void failure(RetrofitError error) {
                                     if (pd != null && pd.isShowing()) {
                                         pd.dismiss();
+                                        Log.i("Error:",error.toString());
                                         Toast.makeText(Activity_Reigister_Phone.this, "Error in registering your phone number. Plese try again in some time.", Toast.LENGTH_LONG).show();
                                     }
                                 }

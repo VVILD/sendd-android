@@ -11,9 +11,6 @@ import co.sendd.gettersandsetters.Address;
 
 import java.util.List;
 
-/**
- * Created by Kuku on 16/02/15.
- */
 @Table(name = "address_receiver")
 public class Db_Address_Receiver extends Model{
 

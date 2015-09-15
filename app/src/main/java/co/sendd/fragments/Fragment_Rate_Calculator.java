@@ -36,7 +36,7 @@ import static co.sendd.helper.NetworkUtils.hideSoftKeyboard;
  * Created by Kuku on 18/02/15.
  */
 public class Fragment_Rate_Calculator extends Fragment {
-    EditText weight;
+    EditText weight,l,b,h;
     AutoCompleteTextView Pincode;
     String[] pincodes;
     Button estimate;
@@ -87,14 +87,16 @@ public class Fragment_Rate_Calculator extends Fragment {
         bulkcost = (TextView) view.findViewById(R.id.tvcostBulk);
         premcost = (TextView) view.findViewById(R.id.tvcostPremimum);
         weight = (EditText) view.findViewById(R.id.etWeight);
+        l = (EditText) view.findViewById(R.id.etLength);
+        b = (EditText) view.findViewById(R.id.etBreadth);
+        h = (EditText) view.findViewById(R.id.etHeight);
+
         Pincode = (AutoCompleteTextView) view.findViewById(R.id.etPincode);
         Pincode.setAdapter(adapter);
         estimate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 hideSoftKeyboard(getActivity());
-
-
                 if (!TextUtils.isEmpty(Pincode.getText().toString())) {
                     for (String pincode : pincodes) {
                         if (pincode.equals(Pincode.getText().toString())) {
@@ -133,6 +135,9 @@ public class Fragment_Rate_Calculator extends Fragment {
                                 ShippingPrice shippingPrice = new ShippingPrice();
                                 shippingPrice.setPincode(Pincode.getText().toString());
                                 shippingPrice.setWeight(weight.getText().toString());
+                                shippingPrice.setL(l.getText().toString());
+                                shippingPrice.setB(b.getText().toString());
+                                shippingPrice.setH(h.getText().toString());
                                 mnetworkutils.getapi().getPrice(shippingPrice, new Callback<ShippingPrice>() {
                                     @Override
                                     public void success(ShippingPrice shippingPrice1, Response response) {

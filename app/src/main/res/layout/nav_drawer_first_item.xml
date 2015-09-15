@@ -29,7 +29,7 @@
         android:layout_marginStart="11dp"
         android:layout_toEndOf="@+id/drawer_profile_image"
         android:layout_toRightOf="@+id/drawer_profile_image"
-        android:text="Name"
+        android:text="Number"
         android:textColor="@android:color/white"
         android:textSize="16sp" />
 

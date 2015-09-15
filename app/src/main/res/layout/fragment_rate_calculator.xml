@@ -1,262 +1,322 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
     android:orientation="vertical"
     android:paddingTop="20dp">
 
-    <TextView
-        android:id="@+id/tv101"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:gravity="center"
-        android:text="Sending from Powai(400076) \n Where do you want to sendd? "
-        android:textSize="18sp" />
-
-    <TextView
-        android:id="@+id/tv11111"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/tv101"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="25dp"
-        android:gravity="center"
-        android:text="For International Parcel Calls us at 8080028081"
-        android:textSize="14sp" />
     <RelativeLayout
-        android:id="@+id/rl000"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/tv11111"
+        android:background="@color/white"
         android:orientation="vertical">
 
-        <RelativeLayout
-            android:id="@+id/rl001"
-            android:layout_width="wrap_content"
-            android:layout_height="60dp"
+
+        <TextView
+            android:id="@+id/tv11111"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="5dp"
-            android:orientation="horizontal"
-            android:padding="10dp"
-            android:weightSum="100">
+            android:gravity="center"
+            android:text="For International Parcel Calls us at 8080028081"
+            android:textSize="14sp" />
+
+        <RelativeLayout
+            android:id="@+id/rl000"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tv11111"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:id="@+id/rl001"
+                android:layout_width="wrap_content"
+                android:layout_height="60dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="5dp"
+                android:orientation="horizontal"
+                android:padding="10dp"
+                android:weightSum="100">
+
+                <TextView
+                    android:id="@+id/tv000"
+                    android:layout_width="wrap_content"
+                    android:layout_height="40dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_gravity="top"
+                    android:layout_weight="80"
+                    android:gravity="center_vertical"
+                    android:text="Pincode:"
+                    android:textColor="@color/black"
+                    android:textSize="18sp" />
+
+                <AutoCompleteTextView
+                    android:id="@+id/etPincode"
+                    android:layout_width="150dp"
+                    android:layout_height="40dp"
+                    android:layout_toRightOf="@+id/tv000"
+                    android:background="@color/grey"
+                    android:capitalize="words"
+                    android:hint="Pincode"
+                    android:inputType="number"
+                    android:paddingLeft="10dp"
+                    android:singleLine="true" />
+            </RelativeLayout>
 
             <TextView
-                android:id="@+id/tv000"
+                android:id="@+id/tvvvv"
                 android:layout_width="wrap_content"
-                android:layout_height="40dp"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
-                android:layout_gravity="top"
-                android:layout_weight="80"
-                android:gravity="center_vertical"
-                android:text="Pincode:"
-                android:textColor="@color/black"
-                android:textSize="18sp" />
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/rl001"
+                android:layout_centerHorizontal="true"
+                android:text="Weight in kg"
+                android:textColor="@color/black" />
 
-            <AutoCompleteTextView
-                android:id="@+id/etPincode"
+            <LinearLayout
+                android:id="@+id/rl444"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:layout_below="@+id/tvvvv"
+                android:layout_centerHorizontal="true"
+                android:layout_toEndOf="@+id/rl333"
+                android:layout_toRightOf="@+id/rl333"
+                android:orientation="horizontal"
+                android:padding="10dp">
+
+                <EditText
+                    android:id="@+id/etWeight"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_margin="5dp"
+                    android:layout_toRightOf="@+id/tv444"
+                    android:layout_weight="50"
+                    android:background="@color/grey"
+                    android:hint="Weight"
+                    android:gravity="center"
+                    android:imeOptions="actionDone"
+                    android:inputType="numberDecimal"
+                    android:paddingLeft="10dp"
+                    android:singleLine="true" />
+
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvvsvv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/rl444"
+                android:layout_centerHorizontal="true"
+                android:text="Volumetric weight in cm (optional)"
+                android:textColor="@color/black" />
+
+            <LinearLayout
+
+                android:id="@+id/rl445"
+                android:layout_width="match_parent"
+                android:layout_height="80dp"
+                android:layout_below="@+id/tvvsvv"
+                android:layout_centerHorizontal="true"
+                android:layout_toEndOf="@+id/rl333"
+                android:layout_toRightOf="@+id/rl333"
+                android:orientation="horizontal"
+                android:padding="10dp"
+                android:weightSum="100">
+
+                <EditText
+                    android:id="@+id/etLength"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_margin="5dp"
+                    android:layout_toRightOf="@+id/tv444"
+                    android:layout_weight="33"
+                    android:background="@color/grey"
+                    android:hint="Length"
+                    android:imeOptions="actionDone"
+                    android:inputType="numberDecimal"
+                    android:paddingLeft="10dp"
+                    android:singleLine="true" />
+
+                <EditText
+                    android:id="@+id/etBreadth"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_margin="5dp"
+                    android:layout_toRightOf="@+id/tv444"
+                    android:layout_weight="33"
+                    android:background="@color/grey"
+                    android:hint="Breadth"
+                    android:imeOptions="actionDone"
+                    android:inputType="numberDecimal"
+                    android:paddingLeft="10dp"
+                    android:singleLine="true" />
+
+                <EditText
+                    android:id="@+id/etHeight"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_margin="5dp"
+                    android:layout_toRightOf="@+id/tv444"
+                    android:layout_weight="33"
+                    android:background="@color/grey"
+                    android:hint="Height"
+                    android:imeOptions="actionDone"
+                    android:inputType="numberDecimal"
+                    android:paddingLeft="10dp"
+                    android:singleLine="true" />
+            </LinearLayout>
+
+            <Button
+
+                android:id="@+id/bEstimate"
                 android:layout_width="150dp"
                 android:layout_height="40dp"
-                android:layout_toRightOf="@+id/tv000"
-                android:background="@color/grey"
-                android:capitalize="words"
-                android:hint="Pincode"
-                android:inputType="number"
-                android:paddingLeft="10dp"
-                android:singleLine="true" />
+                android:layout_below="@+id/rl445"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="20dp"
+                android:background="@drawable/buttons"
+                android:text="Get Estimate"
+                android:textColor="@color/white" />
+
         </RelativeLayout>
 
-
-        <RelativeLayout
-
-            android:id="@+id/rl444"
+        <ScrollView
             android:layout_width="wrap_content"
-            android:layout_height="80dp"
-            android:layout_below="@+id/rl001"
-            android:layout_centerHorizontal="true"
-            android:layout_toEndOf="@+id/rl333"
-            android:layout_toRightOf="@+id/rl333"
-            android:orientation="horizontal"
-            android:padding="10dp"
-            android:weightSum="100">
-
-            <TextView
-                android:id="@+id/tv444"
-                android:layout_width="70dp"
-                android:layout_height="40dp"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentTop="true"
-                android:layout_gravity="top"
-                android:layout_weight="80"
-                android:gravity="center_vertical"
-                android:text="Weight:"
-                android:textColor="@color/black"
-                android:textSize="18sp" />
-
-            <EditText
-                android:id="@+id/etWeight"
-                android:layout_width="100dp"
-                android:layout_height="40dp"
-                android:layout_toRightOf="@+id/tv444"
-                android:layout_weight="20"
-                android:background="@color/grey"
-                android:hint="in kgs"
-                android:imeOptions="actionDone"
-                android:inputType="numberDecimal"
-                android:paddingLeft="10dp"
-                android:singleLine="true" />
-        </RelativeLayout>
-
-        <Button
-
-            android:id="@+id/bEstimate"
-            android:layout_width="150dp"
-            android:layout_height="40dp"
-            android:layout_below="@+id/rl444"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="20dp"
-            android:background="@drawable/buttons"
-            android:text="Get Estimate"
-            android:textColor="@color/white" />
-
-    </RelativeLayout>
-
-    <ScrollView
-        android:layout_width="wrap_content"
-        android:layout_height="300dp"
-        android:layout_below="@+id/rl000"
-        android:layout_centerInParent="true"
-        android:background="#FFFFFF">
-
-
-        <HorizontalScrollView
-            android:layout_width="wrap_content"
-            android:layout_height="450dp"
+            android:layout_height="300dp"
+            android:layout_below="@+id/rl000"
+            android:layout_centerInParent="true"
             android:background="#FFFFFF">
 
-            <TableLayout
 
-                android:id="@+id/hideRl"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:gravity="center"
-                android:visibility="gone">
+            <HorizontalScrollView
+                android:layout_width="wrap_content"
+                android:layout_height="450dp"
+                android:background="#FFFFFF">
 
-                <TableRow>
+                <TableLayout
 
-                    <TextView
-                        android:gravity="left"
-                        android:padding="5dp"
-                        android:text="Mode of shipping"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
+                    android:id="@+id/hideRl"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:gravity="center"
+                    android:visibility="gone">
 
-                    <TextView
-                        android:gravity="left"
-                        android:padding="5dp"
-                        android:text="Number of days"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
+                    <TableRow>
 
-                    <TextView
-                        android:gravity="left"
-                        android:padding="5dp"
-                        android:text="Price"
-                        android:textSize="14sp"
-                        android:textStyle="bold" />
-                </TableRow>
+                        <TextView
+                            android:gravity="left"
+                            android:padding="5dp"
+                            android:text="Mode of shipping"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
 
-                <TableRow>
+                        <TextView
+                            android:gravity="left"
+                            android:padding="5dp"
+                            android:text="Number of days"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
 
-                    <TextView
-                        android:id="@+id/tvStandard"
-                        android:gravity="left"
-                        android:padding="5dp"
-                        android:text="Standard"
-                        android:textSize="13sp" />
+                        <TextView
+                            android:gravity="left"
+                            android:padding="5dp"
+                            android:text="Price"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+                    </TableRow>
 
-                    <TextView
-                        android:id="@+id/tvtimeStandard"
-                        android:gravity="left"
-                        android:padding="5dp"
-                        android:text=""
-                        android:textSize="13dp" />
+                    <TableRow>
 
-                    <TextView
-                        android:id="@+id/tvcostStandard"
-                        android:gravity="left"
-                        android:padding="5dp"
-                        android:text=""
-                        android:textSize="13sp" />
+                        <TextView
+                            android:id="@+id/tvStandard"
+                            android:gravity="left"
+                            android:padding="5dp"
+                            android:text="Standard"
+                            android:textSize="13sp" />
 
-                </TableRow>
+                        <TextView
+                            android:id="@+id/tvtimeStandard"
+                            android:gravity="left"
+                            android:padding="5dp"
+                            android:text=""
+                            android:textSize="13dp" />
 
+                        <TextView
+                            android:id="@+id/tvcostStandard"
+                            android:gravity="left"
+                            android:padding="5dp"
+                            android:text=""
+                            android:textSize="13sp" />
 
-                <TableRow>
-
-                    <TextView
-                        android:id="@+id/tvPremimum"
-                        android:gravity="left"
-                        android:padding="5dp"
-                        android:text="Premium"
-                        android:textSize="13sp" />
-
-                    <TextView
-                        android:id="@+id/tvtimePremimum"
-                        android:layout_below="@+id/tvPremimum"
+                    </TableRow>
 
 
-                        android:gravity="left"
-                        android:padding="5dp"
+                    <TableRow>
 
-                        android:text=""
-                        android:textSize="13dp" />
+                        <TextView
+                            android:id="@+id/tvPremimum"
+                            android:gravity="left"
+                            android:padding="5dp"
+                            android:text="Premium"
+                            android:textSize="13sp" />
 
-                    <TextView
-                        android:id="@+id/tvcostPremimum"
-                        android:layout_below="@+id/tvPremimum"
-
-                        android:gravity="left"
-
-                        android:padding="5dp"
-                        android:text=""
-                        android:textSize="13dp" />
-
-                </TableRow>
-                <TableRow>
-
-                    <TextView
-                        android:id="@+id/tvBulk"
-                        android:gravity="left"
-                        android:padding="5dp"
-                        android:text="Bulk  (min 6 kgs)"
-                        android:textSize="13sp" />
-
-                    <TextView
-                        android:id="@+id/tvtimeBulk"
+                        <TextView
+                            android:id="@+id/tvtimePremimum"
+                            android:layout_below="@+id/tvPremimum"
 
 
-                        android:gravity="left"
+                            android:gravity="left"
+                            android:padding="5dp"
 
-                        android:padding="5dp"
-                        android:text=""
-                        android:textSize="13dp" />
+                            android:text=""
+                            android:textSize="13dp" />
 
-                    <TextView
-                        android:id="@+id/tvcostBulk"
-                        android:layout_below="@+id/tvBulk"
-                        android:layout_toRightOf="@+id/tvcostPremimum"
-                        android:gravity="start"
-                        android:padding="5dp"
-                        android:text=""
-                        android:textSize="13sp" />
-                </TableRow>
-            </TableLayout>
-        </HorizontalScrollView>
-    </ScrollView>
-</RelativeLayout>
+                        <TextView
+                            android:id="@+id/tvcostPremimum"
+                            android:layout_below="@+id/tvPremimum"
+
+                            android:gravity="left"
+
+                            android:padding="5dp"
+                            android:text=""
+                            android:textSize="13dp" />
+
+                    </TableRow>
+
+                    <TableRow>
+
+                        <TextView
+                            android:id="@+id/tvBulk"
+                            android:gravity="left"
+                            android:padding="5dp"
+                            android:text="Bulk  (min 6 kgs)"
+                            android:textSize="13sp" />
+
+                        <TextView
+                            android:id="@+id/tvtimeBulk"
+
+
+                            android:gravity="left"
+
+                            android:padding="5dp"
+                            android:text=""
+                            android:textSize="13dp" />
+
+                        <TextView
+                            android:id="@+id/tvcostBulk"
+                            android:layout_below="@+id/tvBulk"
+                            android:layout_toRightOf="@+id/tvcostPremimum"
+                            android:gravity="start"
+                            android:padding="5dp"
+                            android:text=""
+                            android:textSize="13sp" />
+                    </TableRow>
+                </TableLayout>
+            </HorizontalScrollView>
+        </ScrollView>
+    </RelativeLayout>
+</ScrollView>

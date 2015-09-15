@@ -35,8 +35,6 @@ public class Activity_Add_New_Address_Receiver extends BaseActivity implements T
     private AutoCompleteTextView etReceiverPincode;
 
     public void Init() {
-        //SetUp Onchange Listener
-        //SetUp array List for Pincodes
         pincodes = getResources().getStringArray(R.array.pincode);
         ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, pincodes);
         etReceiverName = (EditText) findViewById(R.id.etactivity_add_new_address_receiver_Name);
@@ -58,13 +56,11 @@ public class Activity_Add_New_Address_Receiver extends BaseActivity implements T
         etReceiverPincode.setAdapter(adapter);
 
         if (getIntent() != null) {
-            //Address Coming from Google Search Query
             etReceiverCountry.setText(getIntent().getStringExtra("Country"));
             etReceiverLocality.setText(getIntent().getStringExtra("Locality"));
             etReceiverCity.setText(getIntent().getStringExtra("City"));
             etReceiverState.setText(getIntent().getStringExtra("State"));
         }
-        //SetUp Toolbar for Activity
         Toolbar toolbar = (Toolbar) findViewById(R.id.activity_add_new_address_receiver_toolbar);
         SaveAddress = (Button) findViewById(R.id.bactivity_add_new_address_receiver_SaveAddress);
         setSupportActionBar(toolbar);
@@ -80,17 +76,13 @@ public class Activity_Add_New_Address_Receiver extends BaseActivity implements T
         );
     }
 
-    //On Activity Create
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_new_address_receiver);
         setupUI(findViewById(R.id.main_parent));
         this.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-        //Initialize EditTexts
         Init();
-
-        //Save New Address
         SaveAddress.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -111,7 +103,7 @@ public class Activity_Add_New_Address_Receiver extends BaseActivity implements T
                                                         }
                                                     }
                                                     if (matched) {
-                                                        //Save Drop Address in DB
+                                                        //Save Drop Awddress in DB
                                                         Address address = new Address();
                                                         address.setName(etReceiverName.getText().toString());
                                                         address.setPhone(etReceiverNumber.getText().toString());
@@ -223,11 +215,14 @@ public class Activity_Add_New_Address_Receiver extends BaseActivity implements T
         if (!etReceiverName.getText().toString().isEmpty()) etReceiverName.setError(null, null);
         if (!etReceiverFlatno.getText().toString().isEmpty()) etReceiverFlatno.setError(null, null);
         if (!etReceiverNumber.getText().toString().isEmpty()) etReceiverNumber.setError(null, null);
-        if (!etReceiverLocality.getText().toString().isEmpty()) etReceiverLocality.setError(null, null);
+        if (!etReceiverLocality.getText().toString().isEmpty())
+            etReceiverLocality.setError(null, null);
         if (!etReceiverCity.getText().toString().isEmpty()) etReceiverCity.setError(null, null);
         if (!etReceiverState.getText().toString().isEmpty()) etReceiverState.setError(null, null);
-        if (!etReceiverPincode.getText().toString().isEmpty()) etReceiverPincode.setError(null, null);
-        if (!etReceiverCountry.getText().toString().isEmpty()) etReceiverCountry.setError(null, null);
+        if (!etReceiverPincode.getText().toString().isEmpty())
+            etReceiverPincode.setError(null, null);
+        if (!etReceiverCountry.getText().toString().isEmpty())
+            etReceiverCountry.setError(null, null);
     }
 
     @Override

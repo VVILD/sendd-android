@@ -326,71 +326,77 @@ public class Fragment_Orders extends Fragment {
         pickupNow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Calendar cal = Calendar.getInstance();
+                if (Calendar.SUNDAY != cal.get(Calendar.DAY_OF_WEEK)) {
+                    wr.event.push("PickUp now Clicked");
+                    final NetworkUtils mnetworkutils = new NetworkUtils(getActivity());
+                    Date d = Calendar.getInstance().getTime();
+                    DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+                    final String time = dateFormat.format(d);
+                    if (mnetworkutils.isnetconnected()) {
+                        if (d.getHours() >= 10 && d.getHours() < 18) {
+                            if (!(utils.getvalue("PickupAddress").equals(""))) {
+                                if (madapter.getCount() > 0) {
+                                    if (!utils.isRegisterd()) {
+                                        final Dialog dialog = new Dialog(getActivity());
+                                        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                                        dialog.setContentView(R.layout.dialog_confirm_address);
+                                        dialog.getWindow().setBackgroundDrawable((new ColorDrawable(android.graphics.Color.TRANSPARENT)));
+                                        dialog.show();
+                                        TextView tv = (TextView) dialog.findViewById(R.id.textView4);
+                                        TextView tv2 = (TextView) dialog.findViewById(R.id.tvButtonconfirm);
+                                        ImageView iv = (ImageView) dialog.findViewById(R.id.ivButtonconfirm);
+                                        tv2.setText("Confirm");
+                                        iv.setImageResource(R.drawable.dialog_righticon);
+                                        tv.setText(utils.getvalue("PickupFlatNo") + ", " + utils.getvalue("PickupAddress") + ", " + utils.getvalue("PickupPincode"));
+                                        dialog.findViewById(R.id.bCancel).setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                dialog.dismiss();
+                                                Intent i = new Intent(getActivity(), Activity_Reigister_Phone.class);
+                                                i.putExtra("PickupOption", "PickUpNow");
+                                                i.putExtra("adapterCount", madapter.getCount());
+                                                getActivity().startActivity(i);
+                                                getActivity().overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
 
-                wr.event.push("PickUp now Clicked");
-                final NetworkUtils mnetworkutils = new NetworkUtils(getActivity());
-                Date d = Calendar.getInstance().getTime();
-                DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-                final String time = dateFormat.format(d);
-                if (mnetworkutils.isnetconnected()) {
-                    if (d.getHours() >= 10 && d.getHours() < 18) {
-                        if (!(utils.getvalue("PickupAddress").equals(""))) {
-                            if (madapter.getCount() > 0) {
-                                if (!utils.isRegisterd()) {
-                                    final Dialog dialog = new Dialog(getActivity());
-                                    dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-                                    dialog.setContentView(R.layout.dialog_confirm_address);
-                                    dialog.getWindow().setBackgroundDrawable((new ColorDrawable(android.graphics.Color.TRANSPARENT)));
-                                    dialog.show();
-                                    TextView tv = (TextView) dialog.findViewById(R.id.textView4);
-                                    TextView tv2 = (TextView) dialog.findViewById(R.id.tvButtonconfirm);
-                                    ImageView iv = (ImageView) dialog.findViewById(R.id.ivButtonconfirm);
-                                    tv2.setText("Confirm");
-                                    iv.setImageResource(R.drawable.dialog_righticon);
-                                    tv.setText(utils.getvalue("PickupFlatNo") + ", " + utils.getvalue("PickupAddress") + ", " + utils.getvalue("PickupPincode"));
-                                    dialog.findViewById(R.id.bCancel).setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            dialog.dismiss();
-                                            Intent i = new Intent(getActivity(), Activity_Reigister_Phone.class);
-                                            i.putExtra("PickupOption", "PickUpNow");
-                                            i.putExtra("adapterCount", madapter.getCount());
-                                            getActivity().startActivity(i);
-                                            getActivity().overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
+                                            }
+                                        });
+                                        dialog.findViewById(R.id.bChange).setOnClickListener(new View.OnClickListener() {
+                                            @Override
+                                            public void onClick(View v) {
+                                                dialog.dismiss();
+                                                Intent i = new Intent(getActivity(), Activity_Pickup_Address.class);
+                                                startActivity(i);
+                                                getActivity().overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
 
-                                        }
-                                    });
-                                    dialog.findViewById(R.id.bChange).setOnClickListener(new View.OnClickListener() {
-                                        @Override
-                                        public void onClick(View v) {
-                                            dialog.dismiss();
-                                            Intent i = new Intent(getActivity(), Activity_Pickup_Address.class);
-                                            startActivity(i);
-                                            getActivity().overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
-
-                                        }
-                                    });
+                                            }
+                                        });
+                                    } else {
+                                        BookService(new Date(), time, "Y");
+                                    }
                                 } else {
-                                    BookService(new Date(), time, "Y");
+                                    Toast.makeText(getActivity(), "Add Parcel to continue booking", Toast.LENGTH_LONG).show();
                                 }
-                            } else {
-                                Toast.makeText(getActivity(), "Add Parcel to continue booking", Toast.LENGTH_LONG).show();
-                            }
 
+                            } else {
+                                Intent i = new Intent(getActivity(), Activity_Pickup_Address.class);
+                                startActivity(i);
+                                getActivity().overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
+                            }
                         } else {
-                            Intent i = new Intent(getActivity(), Activity_Pickup_Address.class);
-                            startActivity(i);
-                            getActivity().overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
+                            for (int i = 0; i < 2; i++) {
+                                Toast.makeText(getActivity(), "We currently serve between 10 AM to 6 PM. Kindly use Pick Later option or book tomorrow.", Toast.LENGTH_LONG).show();
+                            }
                         }
                     } else {
-                        for (int i = 0; i < 2; i++) {
-                            Toast.makeText(getActivity(), "We currently serve between 10 AM to 6 PM. Kindly use Pick Later option or book tomorrow.", Toast.LENGTH_LONG).show();
-                        }
+                        Toast.makeText(getActivity(), "Please Connect to a working Internet Connection", Toast.LENGTH_LONG).show();
                     }
                 } else {
-                    Toast.makeText(getActivity(), "Please Connect to a working Internet Connection", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), "Sorry we are closed on Sundays.", Toast.LENGTH_LONG).show();
                 }
             }
+
+
         });
 
         pickupLater.setOnClickListener(
@@ -481,6 +487,8 @@ public class Fragment_Orders extends Fragment {
                         );
                         RadioButton rToday = (RadioButton) dialog.findViewById(R.id.radioToday);
                         RadioButton rTomorrow = (RadioButton) dialog.findViewById(R.id.radioTomorrow);
+                        RadioButton radioDayAfter = (RadioButton) dialog.findViewById(R.id.radioDayAfter);
+
                         PickLater_Date = (NumberPicker) dialog.findViewById(R.id.timeslots);
                         final String[] timeSlots = new String[]{"10:00 AM", "10:30 AM", "11:00 AM", "11:30 AM", "12:00 PM", "12:30 PM", "01:00 PM", "01:30 PM", "02:00 PM", "02:30 PM", "03:00 PM", "03:30 PM", "04:00 PM", "04:30 PM", "05:00 PM", "05:30 PM", "06:00 PM"};
                         if (mDate.getHours() < 17) {
@@ -531,6 +539,30 @@ public class Fragment_Orders extends Fragment {
                                     PickupLaterTime = timeSlots[PickLater_Date.getValue()];
                                 }
                             });
+                        }
+                        Calendar cal = Calendar.getInstance();
+                        if (Calendar.SUNDAY == cal.get(Calendar.DAY_OF_WEEK)) {
+                            rToday.setVisibility(View.GONE);
+                            rTomorrow.setChecked(true);
+                            PickLater_Date = (NumberPicker) dialog.findViewById(R.id.timeslots);
+                            PickLater_Date.setDisplayedValues(null);
+                            PickLater_Date.setMinValue(0);
+                            PickLater_Date.setMaxValue(timeSlots.length - 1);
+                            PickLater_Date.setDisplayedValues(timeSlots);
+                            c.setTime(new Date());
+                            c.add(Calendar.DATE, 1);
+                            PickupLaterDate = c.getTime();
+                            PickupLaterTime = timeSlots[PickLater_Date.getValue()];
+                            PickLater_Date.setOnValueChangedListener(new NumberPicker.OnValueChangeListener() {
+                                @Override
+                                public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
+                                    PickupLaterTime = timeSlots[PickLater_Date.getValue()];
+                                }
+                            });
+                        }else if(Calendar.SATURDAY == cal.get(Calendar.DAY_OF_WEEK)){
+                            rTomorrow.setVisibility(View.GONE);
+                        }else if(Calendar.FRIDAY == cal.get(Calendar.DAY_OF_WEEK)){
+                            radioDayAfter.setVisibility(View.GONE);
                         }
                         radioGroup1.setOnCheckedChangeListener(
                                 new RadioGroup.OnCheckedChangeListener() {

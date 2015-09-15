@@ -24,20 +24,17 @@ import retrofit.RestAdapter;
 import retrofit.client.ApacheClient;
 import retrofit.converter.GsonConverter;
 
-/**
- * Created by Kuku on 17/02/15.
- */
 public class NetworkUtils {
     private static final String[] DATE_FORMATS = new String[]{
             "yyyy-MM-dd"
     };
-    public static String END_POINT = "http://128.199.159.90/api/v2/";
+//    public static String END_POINT = "http://128.199.159.90/api/v2/";
     Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd")
             .registerTypeAdapter(Date.class, new DateDeserializer())
             .create();
     private Context mcontext;
-//    public static String END_POINT="http://128.199.185.217/api/v2/";
-
+    public static String END_POINT="http://sendmates.com/api/v2/";
+//
     public NetworkUtils(Context c) {
         this.mcontext = c;
     }
