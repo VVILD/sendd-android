@@ -48,6 +48,9 @@ import com.wizrocket.android.sdk.WizRocketAPI;
 import com.wizrocket.android.sdk.exceptions.WizRocketMetaDataNotFoundException;
 import com.wizrocket.android.sdk.exceptions.WizRocketPermissionsNotSatisfied;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -81,11 +84,9 @@ import co.sendd.helper.Utils;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
+import retrofit.mime.TypedByteArray;
 import retrofit.mime.TypedFile;
 
-/**
- * Created by Kuku on 12/02/15.
- */
 public class Fragment_Orders extends Fragment {
     private static final int CAMERA_CAPTURE_IMAGE_REQUEST_CODE = 101;
     private static final int CAMERA_CAPTURE_IMAGE_REQUEST_CODE_New_Image = 100;
@@ -331,7 +332,7 @@ public class Fragment_Orders extends Fragment {
                     wr.event.push("PickUp now Clicked");
                     final NetworkUtils mnetworkutils = new NetworkUtils(getActivity());
                     Date d = Calendar.getInstance().getTime();
-                    DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+                    DateFormat dateFormat = new SimpleDateFormat("hh:mm a");
                     final String time = dateFormat.format(d);
                     if (mnetworkutils.isnetconnected()) {
                         if (d.getHours() >= 10 && d.getHours() < 18) {
@@ -559,9 +560,9 @@ public class Fragment_Orders extends Fragment {
                                     PickupLaterTime = timeSlots[PickLater_Date.getValue()];
                                 }
                             });
-                        }else if(Calendar.SATURDAY == cal.get(Calendar.DAY_OF_WEEK)){
+                        } else if (Calendar.SATURDAY == cal.get(Calendar.DAY_OF_WEEK)) {
                             rTomorrow.setVisibility(View.GONE);
-                        }else if(Calendar.FRIDAY == cal.get(Calendar.DAY_OF_WEEK)){
+                        } else if (Calendar.FRIDAY == cal.get(Calendar.DAY_OF_WEEK)) {
                             radioDayAfter.setVisibility(View.GONE);
                         }
                         radioGroup1.setOnCheckedChangeListener(
@@ -840,6 +841,8 @@ public class Fragment_Orders extends Fragment {
     }
 
     public void BookService(final Date date1, final String time1, final String from) {
+        Log.i("time1:", time1);
+        Log.i("Date:", String.valueOf(date1));
         final NetworkUtils mnetworkutils = new NetworkUtils(getActivity());
         final ProgressDialog mprogress;
         mprogress = new ProgressDialog(getActivity());
@@ -964,7 +967,7 @@ public class Fragment_Orders extends Fragment {
                                                 @Override
                                                 public void failure(RetrofitError error) {
                                                     Log.i("adf;sdjfl;sdfaj;lkjf", error.toString());
-
+                                                    Toast.makeText(getActivity(), "Error Occurred. Please try again in some time.", Toast.LENGTH_LONG).show();
                                                     mprogress.dismiss();
                                                 }
                                             });
@@ -977,7 +980,33 @@ public class Fragment_Orders extends Fragment {
                                     if (mprogress.isShowing()) {
                                         mprogress.dismiss();
                                     }
-                                    Log.i("qwertyuiopajklzxcvbnm,", error.toString());
+                                    String json = new String(((TypedByteArray) error.getResponse().getBody()).getBytes());
+                                    JSONObject jobj;
+                                    try {
+                                        jobj = new JSONObject(new JSONObject(json).get("error").toString());
+                                        if (jobj.getString("message") != null) {
+                                            final Dialog dialog = new Dialog(getActivity());
+                                            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+                                            dialog.setContentView(R.layout.dialog_error_message);
+                                            dialog.getWindow().setBackgroundDrawable((new ColorDrawable(Color.TRANSPARENT)));
+                                            dialog.show();
+                                            TextView tv = (TextView) dialog.findViewById(R.id.textView4);
+                                            tv.setText(jobj.getString("message"));
+                                            dialog.findViewById(R.id.bCancel).setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View v) {
+                                                    dialog.dismiss();
+
+                                                }
+                                            });
+
+                                            Log.i("Message", jobj.getString("message"));
+                                        }else{
+                                            Toast.makeText(getActivity(), "Error Occurred. Please try again in some time.", Toast.LENGTH_LONG).show();
+                                        }
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
 
                                 }
                             });
