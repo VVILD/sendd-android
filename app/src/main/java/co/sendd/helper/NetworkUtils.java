@@ -33,7 +33,7 @@ public class NetworkUtils {
             .registerTypeAdapter(Date.class, new DateDeserializer())
             .create();
     private Context mcontext;
-    public static String END_POINT="http://sendmates.com/api/v2/";
+    public static String END_POINT="http://sendmates.com/";
 //
     public NetworkUtils(Context c) {
         this.mcontext = c;

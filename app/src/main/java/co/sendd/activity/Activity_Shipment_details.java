@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -93,12 +94,12 @@ public class Activity_Shipment_details extends BaseActivity {
         Bill = (TextView) findViewById(R.id.tvRate);
 
         ItemImage = (ImageView) findViewById(R.id.ivItem_Image_preview);
-
+        Log.i("TrackingNo",getIntent().getStringExtra("tracking_no"));
         try {
             if (getIntent().getStringExtra("imageURI").equals("http://128.199.159.90/static")) {
                 ImageLoader.getInstance().displayImage("drawable://" + R.drawable.box_sample_icon, ItemImage);
             } else {
-                if (getIntent().getStringExtra("imageURI").contains("http")) {
+                if (getIntent().getStringExtra("imageURI").contains("sendmates")||getIntent().getStringExtra("imageURI").contains("128.199.159.90")) {
                     ImageLoader.getInstance().displayImage(getIntent().getStringExtra("imageURI"), ItemImage);
 
                 } else {
@@ -136,6 +137,10 @@ public class Activity_Shipment_details extends BaseActivity {
                 public void success(ShipmentDetails shipmentDetails, Response response) {
                     try {
                         if (shipmentDetails.getStatus().equals("C")) {
+                            Db_CompleteOrder completeOrder_DB = new Db_CompleteOrder();
+                            completeOrder_DB.updateStatus(getIntent().getStringExtra("imageURI"), shipmentDetails.getStatus());
+                        }
+                        if (shipmentDetails.getStatus().equals("CA")) {
                             Db_CompleteOrder completeOrder_DB = new Db_CompleteOrder();
                             completeOrder_DB.updateStatus(getIntent().getStringExtra("imageURI"), shipmentDetails.getStatus());
                         }
@@ -189,7 +194,7 @@ public class Activity_Shipment_details extends BaseActivity {
 
                 @Override
                 public void failure(RetrofitError error) {
-
+                    Log.i("error",error.toString());
                     Toast.makeText(Activity_Shipment_details.this, "Error in connection please try again in some time.", Toast.LENGTH_SHORT).show();
                     pd.dismiss();
                 }
@@ -290,5 +295,3 @@ public class Activity_Shipment_details extends BaseActivity {
     }
 
 }
-
-

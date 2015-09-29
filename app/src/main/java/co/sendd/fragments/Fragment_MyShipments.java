@@ -15,7 +15,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.FrameLayout;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TabHost;
 import android.widget.TabWidget;
@@ -31,6 +34,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.ParseException;
@@ -52,9 +56,6 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-/**
- * Created by Kuku on 11/03/15.
- */
 public class Fragment_MyShipments extends Fragment {
     Utils utils;
     @Override
@@ -67,7 +68,6 @@ public class Fragment_MyShipments extends Fragment {
         ((Activity_Main) getActivity()).setActionBarTitle("Previous Bookings");
         ViewPager mViewPager = (ViewPager) view.findViewById(R.id.pager);
         TabsAdapter mTabsAdapter = new TabsAdapter(getActivity(), mTabHost, mViewPager);
-        ;
 
         if ((utils.isRegisterd())) {
             if (utils.isSynced()) {
@@ -78,6 +78,8 @@ public class Fragment_MyShipments extends Fragment {
                         Upcoming_Fragment.class, null);
                 mTabsAdapter.addTab(mTabHost.newTabSpec("COMPLETED").setIndicator("COMPLETED"),
                         Completed_Fragment.class, null);
+                mTabsAdapter.addTab(mTabHost.newTabSpec("CANCELLED").setIndicator("CANCELLED"),
+                        Cancelled_Fragment.class, null);
                 mTabHost.setBackgroundColor(getActivity().getResources().getColor(R.color.white));
                 if (Activity_Main.mProgress != null && Activity_Main.mProgress.isShowing()) {
                     Activity_Main.mProgress.dismiss();
@@ -119,7 +121,6 @@ public class Fragment_MyShipments extends Fragment {
                                         CompleteOrder co = new CompleteOrder();
                                         Db_CompleteOrder DBCO = new Db_CompleteOrder();
                                         JSONObject booking = shipments.getJSONObject(j);
-                                        Log.i("booking.getString namev", booking.getString("name"));
                                         co.setCategory(booking.getString("category"));
                                         if (booking.getString("date").equals("null")) {
                                             co.setDate(null);
@@ -198,7 +199,7 @@ public class Fragment_MyShipments extends Fragment {
 
     public static class All_Fragment extends Fragment {
         ListView AllShipmentListView;
-        AllShipments_adapter mAdapter;
+        Shipments_adapter mAdapter;
         DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
                 .cacheInMemory(true)
                 .cacheOnDisk(true)
@@ -258,7 +259,7 @@ public class Fragment_MyShipments extends Fragment {
             config = new ImageLoaderConfiguration.Builder(getActivity()).defaultDisplayImageOptions(defaultOptions).build();
             AllShipmentListView = (ListView) view.findViewById(R.id.allshipment_list);
             order_data = ShowItemList();
-            mAdapter = new AllShipments_adapter(getActivity(), R.layout.list_item_allshipments, order_data);
+            mAdapter = new Shipments_adapter(getActivity(), R.layout.list_item_allshipments, order_data);
             AllShipmentListView.setAdapter(mAdapter);
             AllShipmentListView.invalidateViews();
             mAdapter.notifyDataSetChanged();
@@ -280,99 +281,11 @@ public class Fragment_MyShipments extends Fragment {
 
         }
 
-        public static class AllShipments_Holder {
-            private TextView Name;
-            private TextView Address;
-            private TextView Status;
-            private TextView Date;
-            private ImageView ItemImage;
-        }
-
-        public class AllShipments_adapter extends ArrayAdapter<CompleteOrder> {
-            private Context c;
-            private List<CompleteOrder> order_list;
-
-            public AllShipments_adapter(Context context, int resource, List<CompleteOrder> objects) {
-                super(context, resource, objects);
-                this.c = context;
-                this.order_list = objects;
-            }
-
-
-            @Override
-            public void add(CompleteOrder object) {
-                super.add(object);
-            }
-
-            @Override
-            public void notifyDataSetChanged() {
-                super.notifyDataSetChanged();
-            }
-
-            @Override
-            public int getCount() {
-                return order_list.size();
-            }
-
-            @Override
-            public CompleteOrder getItem(int position) {
-                return super.getItem(position);
-            }
-
-            @Override
-            public int getPosition(CompleteOrder item) {
-                return super.getPosition(item);
-            }
-
-            @Override
-            public long getItemId(int position) {
-                return super.getItemId(position);
-            }
-
-            @Override
-            public View getView(final int position, View convertView, ViewGroup parent) {
-                AllShipments_Holder mshipments_holder;
-                if (convertView == null) {
-                    mshipments_holder = new AllShipments_Holder();
-                    LayoutInflater inflater = (LayoutInflater) c
-                            .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                    convertView = inflater.inflate(R.layout.list_item_allshipments, parent, false);
-                    mshipments_holder.Name = (TextView) convertView.findViewById(R.id.tvShipmentname);
-                    mshipments_holder.Address = (TextView) convertView.findViewById(R.id.tvShipmentaddress);
-                    mshipments_holder.Status = (TextView) convertView.findViewById(R.id.bshipmentstatus);
-                    mshipments_holder.ItemImage = (ImageView) convertView.findViewById(R.id.ivItem_Image);
-                    mshipments_holder.Date = (TextView) convertView.findViewById(R.id.tvDate);
-                    convertView.setTag(mshipments_holder);
-                } else {
-                    mshipments_holder = (AllShipments_Holder) convertView.getTag();
-                }
-                if (order_list.get(position).getImage_uri().equals("http://128.199.159.90/static")) {
-                    ImageLoader.getInstance().displayImage("drawable://" + R.drawable.box_sample_icon, mshipments_holder.ItemImage);
-                } else {
-                    if (order_list.get(position).getImage_uri().contains("http")) {
-                        ImageLoader.getInstance().displayImage(order_list.get(position).getImage_uri(), mshipments_holder.ItemImage);
-                    } else {
-                        ImageLoader.getInstance().displayImage("file://" + order_list.get(position).getImage_uri(), mshipments_holder.ItemImage);
-                    }
-                }
-                mshipments_holder.Name.setText(order_list.get(position).getDrop_name());
-                mshipments_holder.Address.setText(order_list.get(position).getDrop_address());
-                SimpleDateFormat sdf = new SimpleDateFormat("d - LLL", Locale.US);
-                if (order_list.get(position).getDate() == null) {
-                    mshipments_holder.Date.setText("");
-
-                } else {
-                    mshipments_holder.Date.setText(sdf.format(order_list.get(position).getDate()));
-                }
-                mshipments_holder.Status.setText("Tracking Id: " + order_list.get(position).getTracking_no());
-                return convertView;
-            }
-        }
     }
 
     public static class Upcoming_Fragment extends Fragment {
         ListView AllShipmentListView;
-        UpcomingShipments_adapter mAdapter;
+        Shipments_adapter mAdapter;
         DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
                 .cacheInMemory(true)
                 .cacheOnDisk(true)
@@ -426,7 +339,7 @@ public class Fragment_MyShipments extends Fragment {
         public void onResume() {
             super.onResume();
             order_data = ShowItemList();
-            mAdapter = new UpcomingShipments_adapter(getActivity(), R.layout.list_item_allshipments, order_data);
+            mAdapter = new Shipments_adapter(getActivity(), R.layout.list_item_allshipments, order_data);
             AllShipmentListView.setAdapter(mAdapter);
             AllShipmentListView.invalidateViews();
             mAdapter.notifyDataSetChanged();
@@ -440,7 +353,7 @@ public class Fragment_MyShipments extends Fragment {
             AllShipmentListView = (ListView) view.findViewById(R.id.allshipment_list);
             order_data = ShowItemList();
             config = new ImageLoaderConfiguration.Builder(getActivity()).defaultDisplayImageOptions(defaultOptions).build();
-            mAdapter = new UpcomingShipments_adapter(getActivity(), R.layout.list_item_allshipments, order_data);
+            mAdapter = new Shipments_adapter(getActivity(), R.layout.list_item_allshipments, order_data);
             AllShipmentListView.setAdapter(mAdapter);
             AllShipmentListView.invalidateViews();
             mAdapter.notifyDataSetChanged();
@@ -464,105 +377,107 @@ public class Fragment_MyShipments extends Fragment {
 
         }
 
-        public class AllShipments_Holder {
-            private TextView Name;
-            private TextView Address;
-            private TextView Status;
-            private TextView Date;
-            private ImageView ItemImage;
+    }
+
+    public static class Cancelled_Fragment extends Fragment {
+
+        ListView AllShipmentListView;
+        Shipments_adapter mAdapter;
+        DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
+                .cacheInMemory(true)
+                .cacheOnDisk(true)
+                .build();
+        ImageLoaderConfiguration config;
+        private ArrayList<CompleteOrder> order_data;
+        private ArrayList<CompleteOrder> Order_List;
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
+            return getActivity().getLayoutInflater().inflate(R.layout.fragments_allshipments, container, false);
         }
 
-        public class UpcomingShipments_adapter extends ArrayAdapter<CompleteOrder> {
-            private Context c;
-            private List<CompleteOrder> order_list;
+        public ArrayList<CompleteOrder> ShowItemList() {
 
-            public UpcomingShipments_adapter(Context context, int resource, List<CompleteOrder> objects) {
-                super(context, resource, objects);
-                this.c = context;
-                this.order_list = objects;
-            }
+            Order_List = new ArrayList<>();
+            List<Db_CompleteOrder> list = Db_CompleteOrder.getAllAddress();
+            for (int i = 0; i < list.size(); i++) {
+                Db_CompleteOrder addDBReceiver = list.get(i);
+                CompleteOrder completeOrder = new CompleteOrder();
+                if (addDBReceiver.Order_Status.equals("CA")) {
+                    completeOrder.setDate(addDBReceiver.date);
+                    completeOrder.setPickup_address(addDBReceiver.pickup_address);
+                    completeOrder.setPickup_name(addDBReceiver.pickup_name);
+                    completeOrder.setPickup_phone(addDBReceiver.pickup_phone);
+                    completeOrder.setPickup_pincode(addDBReceiver.pickup_pincode);
+                    completeOrder.setTime(addDBReceiver.time);
+                    completeOrder.setOrder_Status(addDBReceiver.Order_Status);
+                    completeOrder.setPaid(addDBReceiver.paid);
+                    completeOrder.setTotal_cost(addDBReceiver.total_cost);
+                    completeOrder.setDrop_address(addDBReceiver.drop_address);
+                    completeOrder.setDrop_phone(addDBReceiver.drop_phone);
+                    completeOrder.setDrop_name(addDBReceiver.drop_name);
+                    completeOrder.setDrop_pincode(addDBReceiver.drop_pincode);
+                    completeOrder.setCost(addDBReceiver.cost);
+                    completeOrder.setImage_uri(addDBReceiver.image_uri);
+                    completeOrder.setTracking_no(addDBReceiver.tracking_no);
 
+                    completeOrder.setCategory(addDBReceiver.category);
+                    completeOrder.setOrder_id(addDBReceiver.Order_id);
 
-            @Override
-            public void add(CompleteOrder object) {
-                super.add(object);
-            }
-
-            @Override
-            public void notifyDataSetChanged() {
-                super.notifyDataSetChanged();
-            }
-
-            @Override
-            public int getCount() {
-                return order_list.size();
-            }
-
-            @Override
-            public CompleteOrder getItem(int position) {
-                return super.getItem(position);
-            }
-
-            @Override
-            public int getPosition(CompleteOrder item) {
-                return super.getPosition(item);
-            }
-
-            @Override
-            public long getItemId(int position) {
-                return super.getItemId(position);
-            }
-
-            @Override
-            public View getView(final int position, View convertView, ViewGroup parent) {
-                AllShipments_Holder mshipments_holder;
-                if (convertView == null) {
-                    mshipments_holder = new AllShipments_Holder();
-                    LayoutInflater inflater = (LayoutInflater) c
-                            .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                    convertView = inflater.inflate(R.layout.list_item_allshipments, parent, false);
-                    mshipments_holder.Name = (TextView) convertView.findViewById(R.id.tvShipmentname);
-                    mshipments_holder.Address = (TextView) convertView.findViewById(R.id.tvShipmentaddress);
-                    mshipments_holder.Status = (TextView) convertView.findViewById(R.id.bshipmentstatus);
-                    mshipments_holder.ItemImage = (ImageView) convertView.findViewById(R.id.ivItem_Image);
-                    mshipments_holder.Date = (TextView) convertView.findViewById(R.id.tvDate);
-                    convertView.setTag(mshipments_holder);
-                } else {
-                    mshipments_holder = (AllShipments_Holder) convertView.getTag();
+                    Order_List.add(completeOrder);
                 }
-                if (order_list.get(position).getImage_uri().equals("http://128.199.159.90/static")) {
-                    ImageLoader.getInstance().displayImage("drawable://" + R.drawable.box_sample_icon, mshipments_holder.ItemImage);
-                } else {
-                    if (order_list.get(position).getImage_uri().contains("http")) {
-                        ImageLoader.getInstance().displayImage(order_list.get(position).getImage_uri(), mshipments_holder.ItemImage);
-
-                    } else {
-                        ImageLoader.getInstance().displayImage("file://" + order_list.get(position).getImage_uri(), mshipments_holder.ItemImage);
-                    }
-                }
-                mshipments_holder.Name.setText(order_list.get(position).getDrop_name());
-                mshipments_holder.Address.setText(order_list.get(position).getDrop_address());
-                SimpleDateFormat sdf = new SimpleDateFormat("d - LLL", Locale.US);
-                if (order_list.get(position).getDate() == null) {
-                    mshipments_holder.Date.setText("");
-
-                } else {
-                    mshipments_holder.Date.setText(sdf.format(order_list.get(position).getDate()));
-                }
-                mshipments_holder.Status.setText("Tracking Id: " + order_list.get(position).getTracking_no());
-                mAdapter.notifyDataSetChanged();
-                return convertView;
             }
-
-
+            Collections.reverse(Order_List);
+            return Order_List;
         }
 
+        @Override
+        public void onResume() {
+            super.onResume();
+            order_data = ShowItemList();
+            mAdapter = new Shipments_adapter(getActivity(), R.layout.list_item_allshipments, order_data);
+            AllShipmentListView.setAdapter(mAdapter);
+            AllShipmentListView.invalidateViews();
+            mAdapter.notifyDataSetChanged();
+            if (!ImageLoader.getInstance().isInited())
+                ImageLoader.getInstance().init(config);
+        }
+
+        @Override
+        public void onViewCreated(View view, Bundle savedInstanceState) {
+            super.onViewCreated(view, savedInstanceState);
+            AllShipmentListView = (ListView) view.findViewById(R.id.allshipment_list);
+            config = new ImageLoaderConfiguration.Builder(getActivity()).defaultDisplayImageOptions(defaultOptions).build();
+            order_data = ShowItemList();
+            mAdapter = new Shipments_adapter(getActivity(), R.layout.list_item_allshipments, order_data);
+            mAdapter.notifyDataSetChanged();
+            AllShipmentListView.setAdapter(mAdapter);
+            AllShipmentListView.invalidateViews();
+            AllShipmentListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    Intent i = new Intent(getActivity(), Activity_Shipment_details.class);
+                    i.putExtra("tracking_no", Order_List.get(position).getTracking_no());
+                    i.putExtra("imageURI", Order_List.get(position).getImage_uri());
+                    SimpleDateFormat sdf = new SimpleDateFormat("h:m a, d MMMM yyyy", Locale.US);
+                    if (Order_List.get(position).getDate() != null)
+                        i.putExtra("datetime", sdf.format(Order_List.get(position).getDate()));
+                    startActivity(i);
+                    getActivity().overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
+                }
+            });
+
+            if (!ImageLoader.getInstance().isInited())
+                ImageLoader.getInstance().init(config);
+
+        }
     }
 
     public static class Completed_Fragment extends Fragment {
 
         ListView AllShipmentListView;
-        CompletedShipments_adapter mAdapter;
+        Shipments_adapter mAdapter;
         DisplayImageOptions defaultOptions = new DisplayImageOptions.Builder()
                 .cacheInMemory(true)
                 .cacheOnDisk(true)
@@ -615,7 +530,7 @@ public class Fragment_MyShipments extends Fragment {
         public void onResume() {
             super.onResume();
             order_data = ShowItemList();
-            mAdapter = new CompletedShipments_adapter(getActivity(), R.layout.list_item_allshipments, order_data);
+            mAdapter = new Shipments_adapter(getActivity(), R.layout.list_item_allshipments, order_data);
             AllShipmentListView.setAdapter(mAdapter);
             AllShipmentListView.invalidateViews();
             mAdapter.notifyDataSetChanged();
@@ -629,7 +544,7 @@ public class Fragment_MyShipments extends Fragment {
             AllShipmentListView = (ListView) view.findViewById(R.id.allshipment_list);
             config = new ImageLoaderConfiguration.Builder(getActivity()).defaultDisplayImageOptions(defaultOptions).build();
             order_data = ShowItemList();
-            mAdapter = new CompletedShipments_adapter(getActivity(), R.layout.list_item_allshipments, order_data);
+            mAdapter = new Shipments_adapter(getActivity(), R.layout.list_item_allshipments, order_data);
             mAdapter.notifyDataSetChanged();
             AllShipmentListView.setAdapter(mAdapter);
             AllShipmentListView.invalidateViews();
@@ -638,7 +553,8 @@ public class Fragment_MyShipments extends Fragment {
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                     Intent i = new Intent(getActivity(), Activity_Shipment_details.class);
                     i.putExtra("tracking_no", Order_List.get(position).getTracking_no());
-                    i.putExtra("imageURI", Order_List.get(position).getImage_uri());
+                    Log.i("tracking_no", Order_List.get(position).getTracking_no());
+                    i.putExtra("imageURI",  Order_List.get(position).getImage_uri());
                     SimpleDateFormat sdf = new SimpleDateFormat("h:m a, d MMMM yyyy", Locale.US);
                     if (Order_List.get(position).getDate() != null)
                         i.putExtra("datetime", sdf.format(Order_List.get(position).getDate()));
@@ -650,97 +566,6 @@ public class Fragment_MyShipments extends Fragment {
             if (!ImageLoader.getInstance().isInited())
                 ImageLoader.getInstance().init(config);
 
-        }
-
-        public static class AllShipments_Holder {
-            private TextView Name;
-            private TextView Address;
-            private TextView Status;
-            private TextView Date;
-            private ImageView ItemImage;
-        }
-
-        public class CompletedShipments_adapter extends ArrayAdapter<CompleteOrder> {
-            private Context c;
-            private List<CompleteOrder> order_list;
-
-            public CompletedShipments_adapter(Context context, int resource, List<CompleteOrder> objects) {
-                super(context, resource, objects);
-                this.c = context;
-                this.order_list = objects;
-            }
-
-
-            @Override
-            public void add(CompleteOrder object) {
-                super.add(object);
-            }
-
-            @Override
-            public void notifyDataSetChanged() {
-                super.notifyDataSetChanged();
-            }
-
-            @Override
-            public int getCount() {
-                return order_list.size();
-            }
-
-            @Override
-            public CompleteOrder getItem(int position) {
-                return super.getItem(position);
-            }
-
-            @Override
-            public int getPosition(CompleteOrder item) {
-                return super.getPosition(item);
-            }
-
-            @Override
-            public long getItemId(int position) {
-                return super.getItemId(position);
-            }
-
-            @Override
-            public View getView(final int position, View convertView, ViewGroup parent) {
-                AllShipments_Holder mshipments_holder;
-                if (convertView == null) {
-                    mshipments_holder = new AllShipments_Holder();
-                    LayoutInflater inflater = (LayoutInflater) c
-                            .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                    convertView = inflater.inflate(R.layout.list_item_allshipments, parent, false);
-                    mshipments_holder.Name = (TextView) convertView.findViewById(R.id.tvShipmentname);
-                    mshipments_holder.Address = (TextView) convertView.findViewById(R.id.tvShipmentaddress);
-                    mshipments_holder.Status = (TextView) convertView.findViewById(R.id.bshipmentstatus);
-                    mshipments_holder.ItemImage = (ImageView) convertView.findViewById(R.id.ivItem_Image);
-                    mshipments_holder.Date = (TextView) convertView.findViewById(R.id.tvDate);
-                    convertView.setTag(mshipments_holder);
-                } else {
-                    mshipments_holder = (AllShipments_Holder) convertView.getTag();
-                }
-                if (order_list.get(position).getImage_uri().equals("http://128.199.159.90/static")) {
-                    ImageLoader.getInstance().displayImage("drawable://" + R.drawable.box_sample_icon, mshipments_holder.ItemImage);
-                } else {
-                    if (order_list.get(position).getImage_uri().contains("http")) {
-                        ImageLoader.getInstance().displayImage(order_list.get(position).getImage_uri(), mshipments_holder.ItemImage);
-
-                    } else {
-                        ImageLoader.getInstance().displayImage("file://" + order_list.get(position).getImage_uri(), mshipments_holder.ItemImage);
-                    }
-                }
-                mshipments_holder.Name.setText(order_list.get(position).getDrop_name());
-                mshipments_holder.Address.setText(order_list.get(position).getDrop_address());
-                SimpleDateFormat sdf = new SimpleDateFormat("d - LLL", Locale.US);
-                if (order_list.get(position).getDate() == null) {
-                    mshipments_holder.Date.setText("");
-
-                } else {
-                    mshipments_holder.Date.setText(sdf.format(order_list.get(position).getDate()));
-                }
-                mshipments_holder.Status.setText("Tracking Id: " + order_list.get(position).getTracking_no());
-                mAdapter.notifyDataSetChanged();
-                return convertView;
-            }
         }
     }
 
@@ -760,6 +585,17 @@ public class Fragment_MyShipments extends Fragment {
             mTabHost.setOnTabChangedListener(this);
             mViewPager.setAdapter(this);
             mViewPager.setOnPageChangeListener(this);
+            TabWidget widget = mTabHost.getTabWidget();
+
+            LinearLayout ll = (LinearLayout) widget.getParent();
+            HorizontalScrollView hs = new HorizontalScrollView(getActivity());
+            hs.setLayoutParams(new FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.MATCH_PARENT,
+                    FrameLayout.LayoutParams.WRAP_CONTENT));
+            ll.addView(hs, 0);
+            ll.removeView(widget);
+            hs.addView(widget);
+            hs.setHorizontalScrollBarEnabled(false);
         }
 
         public void addTab(TabHost.TabSpec tabSpec, Class<?> clss, Bundle args) {
@@ -795,6 +631,7 @@ public class Fragment_MyShipments extends Fragment {
         public void onPageSelected(int position) {
 
             TabWidget widget = mTabHost.getTabWidget();
+
             int oldFocusability = widget.getDescendantFocusability();
             widget.setDescendantFocusability(ViewGroup.FOCUS_BLOCK_DESCENDANTS);
             mTabHost.setCurrentTab(position);
@@ -825,10 +662,101 @@ public class Fragment_MyShipments extends Fragment {
 
             public View createTabContent(String tag) {
                 View v = new View(mContext);
-                v.setMinimumWidth(0);
+                v.setMinimumWidth(100);
                 v.setMinimumHeight(0);
                 return v;
             }
+        }
+    }
+
+    public static class Shipments_Holder {
+        private TextView Name;
+        private TextView Address;
+        private TextView Status;
+        private TextView Date;
+        private ImageView ItemImage;
+    }
+
+    public static class Shipments_adapter extends ArrayAdapter<CompleteOrder> {
+        private Context c;
+        private List<CompleteOrder> order_list;
+
+        public Shipments_adapter(Context context, int resource, List<CompleteOrder> objects) {
+            super(context, resource, objects);
+            this.c = context;
+            this.order_list = objects;
+        }
+
+
+        @Override
+        public void add(CompleteOrder object) {
+            super.add(object);
+        }
+
+        @Override
+        public void notifyDataSetChanged() {
+            super.notifyDataSetChanged();
+        }
+
+        @Override
+        public int getCount() {
+            return order_list.size();
+        }
+
+        @Override
+        public CompleteOrder getItem(int position) {
+            return super.getItem(position);
+        }
+
+        @Override
+        public int getPosition(CompleteOrder item) {
+            return super.getPosition(item);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return super.getItemId(position);
+        }
+
+        @Override
+        public View getView(final int position, View convertView, ViewGroup parent) {
+            Shipments_Holder mshipments_holder;
+            if (convertView == null) {
+                mshipments_holder = new Shipments_Holder();
+                LayoutInflater inflater = (LayoutInflater) c
+                        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                convertView = inflater.inflate(R.layout.list_item_allshipments, parent, false);
+                mshipments_holder.Name = (TextView) convertView.findViewById(R.id.tvShipmentname);
+                mshipments_holder.Address = (TextView) convertView.findViewById(R.id.tvShipmentaddress);
+                mshipments_holder.Status = (TextView) convertView.findViewById(R.id.bshipmentstatus);
+                mshipments_holder.ItemImage = (ImageView) convertView.findViewById(R.id.ivItem_Image);
+                mshipments_holder.Date = (TextView) convertView.findViewById(R.id.tvDate);
+                convertView.setTag(mshipments_holder);
+            } else {
+                mshipments_holder = (Shipments_Holder) convertView.getTag();
+            }
+
+            if (order_list.get(position).getImage_uri().equals("http://sendmates.com/static")) {
+                ImageLoader.getInstance().displayImage("drawable://" + R.drawable.box_sample_icon, mshipments_holder.ItemImage);
+            } else {
+                if (order_list.get(position).getImage_uri().contains("sendmates") || order_list.get(position).getImage_uri().contains("128.199.159.90")) {
+                    ImageLoader.getInstance().displayImage(order_list.get(position).getImage_uri(), mshipments_holder.ItemImage);
+                } else {
+                    ImageLoader.getInstance().displayImage("file://" + order_list.get(position).getImage_uri(), mshipments_holder.ItemImage);
+                }
+            }
+
+            mshipments_holder.Name.setText(order_list.get(position).getDrop_name());
+            mshipments_holder.Address.setText(order_list.get(position).getDrop_address());
+            SimpleDateFormat sdf = new SimpleDateFormat("d - LLL", Locale.US);
+            if (order_list.get(position).getDate() == null) {
+                mshipments_holder.Date.setText("");
+
+            } else {
+                mshipments_holder.Date.setText(sdf.format(order_list.get(position).getDate()));
+            }
+            mshipments_holder.Status.setText("Tracking Id: " + order_list.get(position).getTracking_no());
+            return convertView;
         }
     }
 }

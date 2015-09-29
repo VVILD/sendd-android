@@ -35,24 +35,32 @@ public class Activity_Add_New_Address_Receiver extends BaseActivity implements T
     private AutoCompleteTextView etReceiverPincode;
 
     public void Init() {
-        pincodes = getResources().getStringArray(R.array.pincode);
-        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, pincodes);
+
         etReceiverName = (EditText) findViewById(R.id.etactivity_add_new_address_receiver_Name);
         etReceiverName.addTextChangedListener(this);
+
         etReceiverFlatno = (EditText) findViewById(R.id.etactivity_add_new_address_receiver_flatno);
         etReceiverFlatno.addTextChangedListener(this);
+
         etReceiverNumber = (EditText) findViewById(R.id.etactivity_add_new_address_receiver_Phone);
         etReceiverNumber.addTextChangedListener(this);
+
         etReceiverCountry = (EditText) findViewById(R.id.etactivity_add_new_address_receiver_Country);
         etReceiverCountry.addTextChangedListener(this);
+
         etReceiverLocality = (EditText) findViewById(R.id.etactivity_add_new_address_receiver_Locality);
         etReceiverLocality.addTextChangedListener(this);
+
         etReceiverCity = (EditText) findViewById(R.id.etactivity_add_new_address_receiver_City);
         etReceiverCity.addTextChangedListener(this);
+
         etReceiverState = (EditText) findViewById(R.id.etactivity_add_new_address_receiver_State);
         etReceiverState.addTextChangedListener(this);
+
         etReceiverPincode = (AutoCompleteTextView) findViewById(R.id.etactivity_add_new_address_receiver_Pincode);
         etReceiverPincode.addTextChangedListener(this);
+        pincodes = getResources().getStringArray(R.array.pincode);
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, pincodes);
         etReceiverPincode.setAdapter(adapter);
 
         if (getIntent() != null) {
@@ -61,6 +69,7 @@ public class Activity_Add_New_Address_Receiver extends BaseActivity implements T
             etReceiverCity.setText(getIntent().getStringExtra("City"));
             etReceiverState.setText(getIntent().getStringExtra("State"));
         }
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.activity_add_new_address_receiver_toolbar);
         SaveAddress = (Button) findViewById(R.id.bactivity_add_new_address_receiver_SaveAddress);
         setSupportActionBar(toolbar);
@@ -74,6 +83,7 @@ public class Activity_Add_New_Address_Receiver extends BaseActivity implements T
                     }
                 }
         );
+
     }
 
     @Override
@@ -103,7 +113,7 @@ public class Activity_Add_New_Address_Receiver extends BaseActivity implements T
                                                         }
                                                     }
                                                     if (matched) {
-                                                        //Save Drop Awddress in DB
+                                                        //Save Drop Address in DB
                                                         Address address = new Address();
                                                         address.setName(etReceiverName.getText().toString());
                                                         address.setPhone(etReceiverNumber.getText().toString());
@@ -178,8 +188,6 @@ public class Activity_Add_New_Address_Receiver extends BaseActivity implements T
             }
         });
     }
-
-
     //if Back button is pressed
     @Override
     public void onBackPressed() {

@@ -19,6 +19,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
+import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -51,9 +52,12 @@ import com.wizrocket.android.sdk.exceptions.WizRocketPermissionsNotSatisfied;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -74,7 +78,11 @@ import co.sendd.activity.Activity_UpdateAddress;
 import co.sendd.databases.Db_CompleteOrder;
 import co.sendd.databases.Db_Item_List;
 import co.sendd.gettersandsetters.CompleteOrder;
+import co.sendd.gettersandsetters.Drop_address;
 import co.sendd.gettersandsetters.ItemList;
+import co.sendd.gettersandsetters.NameEmailObject;
+import co.sendd.gettersandsetters.NewOrderObject;
+import co.sendd.gettersandsetters.NewShipment;
 import co.sendd.gettersandsetters.Orders;
 import co.sendd.gettersandsetters.Promo;
 import co.sendd.gettersandsetters.Shipment;
@@ -841,8 +849,7 @@ public class Fragment_Orders extends Fragment {
     }
 
     public void BookService(final Date date1, final String time1, final String from) {
-        Log.i("time1:", time1);
-        Log.i("Date:", String.valueOf(date1));
+
         final NetworkUtils mnetworkutils = new NetworkUtils(getActivity());
         final ProgressDialog mprogress;
         mprogress = new ProgressDialog(getActivity());
@@ -862,61 +869,116 @@ public class Fragment_Orders extends Fragment {
                     ImageView iv = (ImageView) dialog.findViewById(R.id.ivButtonconfirm);
                     tv2.setText("Confirm");
                     iv.setImageResource(R.drawable.dialog_righticon);
-                    tv.setText(utils.getvalue("PickupFlatNo") + ", " + utils.getvalue("PickupAddress") + ", " + utils.getvalue("PickupPincode"));
+                    String Address = utils.getvalue("PickupFlatNo") + ", " + utils.getvalue("PickupAddress") + ", " + utils.getvalue("PickupPincode");
+                    tv.setText(Address);
                     dialog.findViewById(R.id.bCancel).setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             dialog.dismiss();
-
-                            final Orders orders = new Orders();
-                            final Utils utils = new Utils(getActivity());
-                            orders.setUser(utils.getvalue("RegisteredPhone"));
-                            orders.setDate(date1);
-                            orders.setTime(time1);
-                            orders.setPick_now(from);
-                            orders.setCode(utils.getvalue("coupon_code"));
-                            orders.setEmail(utils.getvalue("Sender_Email"));
-                            orders.setName(utils.getvalue("Sender_Name"));
-                            orders.setAddress(utils.getvalue("PickupAddress"));
-                            orders.setFlat_no(utils.getvalue("PickupFlatNo"));
-
+                            NewOrderObject newOrderObject = new NewOrderObject();
+                            newOrderObject.setAddress(utils.getvalue("PickupAddress"));
+                            newOrderObject.setCode(utils.getvalue("coupon_code"));
+                            newOrderObject.setDate(date1);
+                            newOrderObject.setFlat_no(utils.getvalue("PickupFlatNo"));
                             try {
                                 if (!utils.getvalue("Lat").equals("null"))
-                                    orders.setLatitude(Double.parseDouble(utils.getvalue("Lat")));
+                                    newOrderObject.setLatitude(Double.parseDouble(utils.getvalue("Lat")));
                                 if (!utils.getvalue("Longi").equals("null"))
-                                    orders.setLongitude(Double.parseDouble(utils.getvalue("Longi")));
-                            } catch (NumberFormatException | NullPointerException e) {
+                                    newOrderObject.setLongitude(Double.parseDouble(utils.getvalue("Longi")));
+                            } catch (NumberFormatException | NullPointerException ignored) {
 
                             }
+                            newOrderObject.setPick_now(from);
+                            newOrderObject.setUser("/api/v3/user/" + utils.getvalue("RegisteredPhone") + "/");
+                            newOrderObject.setTime(time1);
+                            newOrderObject.setPincode(utils.getvalue("PickupPincode"));
+                            newOrderObject.setWay("A");
+                            NameEmailObject nameEmailObject = new NameEmailObject();
+                            nameEmailObject.setUser("/api/v3/user/" + utils.getvalue("RegisteredPhone") + "/");
+                            nameEmailObject.setEmail(utils.getvalue("Sender_Email"));
+                            nameEmailObject.setName(utils.getvalue("Sender_Name"));
+                            newOrderObject.setNamemail(nameEmailObject);
+                            ArrayList<NewShipment> newShipmentArray = new ArrayList<>();
+                            madapter.getCount();
+                            Item_list = new ArrayList<>();
+                            final List<Db_Item_List> list = Db_Item_List.getAllItems(String.valueOf(utils.getOrderId()));
+                            for (int i = 0; i < madapter.getCount(); i++) {
+                                final Db_Item_List addDBReceiver = list.get(i);
+                                String cat = "S";
+                                switch (addDBReceiver.setshippingoption) {
+                                    case "Standard":
+                                        cat = "S";
+                                        break;
+                                    case "Bulk":
+                                        cat = "E";
+                                        break;
+                                    case "Set Shipping Option":
+                                    case "Premium":
+                                        cat = "P";
+                                        break;
+                                }
+                                Drop_address drop_address = new Drop_address();
+                                drop_address.setFlat_no(addDBReceiver.flat_no);
+                                drop_address.setPincode(addDBReceiver.pincode);
+                                drop_address.setCity(addDBReceiver.city);
+                                drop_address.setLocality(addDBReceiver.locality);
+                                drop_address.setCountry(addDBReceiver.country);
+                                drop_address.setState(addDBReceiver.state);
+                                NewShipment newShipment = new NewShipment();
+                                newShipment.setCategory(cat);
+                                newShipment.setDrop_address(drop_address);
+                                newShipment.setDrop_name(addDBReceiver.name);
+                                newShipment.setDrop_phone(addDBReceiver.phone);
+                                final Uri imageuri = Uri.parse(addDBReceiver.image_uri);
 
-                            orders.setPincode(utils.getvalue("PickupPincode"));
+                                File file = new File(imageuri.getPath());
+                                byte[] data = new byte[(int) file.length()];
+                                try {
+                                    new FileInputStream(file).read(data);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                                newShipment.setImg(Base64.encodeToString(data, Base64.DEFAULT));
+                                newShipmentArray.add(newShipment);
+                            }
+                            newOrderObject.setShipments(newShipmentArray);
                             mprogress.show();
-                            Log.i("qwertyuiopajklzxcvbnm,", orders.getUser() + orders.getDate() + orders.getTime() + orders.getPickup_flat_no() + orders.getPickup_locality() + orders.getPickup_city() + orders.getPickup_pincode() + orders.getPickup_state() + orders.getPickup_country());
                             final CompleteOrder completeOrder = new CompleteOrder();
-                            mnetworkutils.getapi().order(orders, new Callback<Orders>() {
+                            mnetworkutils.getapi().order(newOrderObject, new Callback<Response>() {
                                 @Override
-                                public void success(final Orders orders, Response response) {
-                                    if (mprogress.isShowing()) {
-                                        completeOrder.setPickup_address(orders.getAddress());
-                                        completeOrder.setPickup_name(orders.getName());
-                                        completeOrder.setPickup_phone(orders.getUser());
-                                        completeOrder.setEmail(orders.getEmail());
-                                        completeOrder.setPickup_pincode(orders.getPincode());
-                                        completeOrder.setOrder_Status(orders.getStatus());
-                                        completeOrder.setPaid(orders.getPaid());
-                                        completeOrder.setTotal_cost(orders.getCost());
+                                public void success(final Response orders, Response response) {
+                                    BufferedReader reader;
+                                    StringBuilder sb = new StringBuilder();
+                                    try {
+                                        reader = new BufferedReader(new InputStreamReader(response.getBody().in()));
+                                        String line;
+                                        try {
+                                            while ((line = reader.readLine()) != null) {
+                                                sb.append(line);
+                                            }
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                                    String result = sb.toString();
+                                    Log.i("result",result);
+                                    try {
+                                        JSONObject jObj = new JSONObject(result);
+                                        completeOrder.setPickup_address(utils.getvalue("PickupAddress"));
+                                        completeOrder.setPickup_name(utils.getvalue("Sender_Name"));
+                                        completeOrder.setPickup_phone(utils.getvalue("RegisteredPhone"));
+                                        completeOrder.setEmail(utils.getvalue("Sender_Email"));
+                                        completeOrder.setPickup_pincode(utils.getvalue("PickupPincode"));
                                         completeOrder.setDate(date1);
                                         completeOrder.setTime(time1);
-                                        Log.i("orders.getStatus() =", orders.getStatus());
-                                        Log.i("OrderNumber Generated =", orders.getOrder_no());
-                                        madapter.getCount();
-                                        Item_list = new ArrayList<>();
-                                        List<Db_Item_List> list = Db_Item_List.getAllItems(String.valueOf(utils.getOrderId()));
+                                        completeOrder.setOrder_Status(jObj.getString("status"));
 
                                         for (int i = 0; i < madapter.getCount(); i++) {
                                             final Db_Item_List addDBReceiver = list.get(i);
                                             String cat = "S";
-
                                             switch (addDBReceiver.setshippingoption) {
                                                 case "Standard":
                                                     cat = "S";
@@ -929,50 +991,36 @@ public class Fragment_Orders extends Fragment {
                                                     cat = "P";
                                                     break;
                                             }
+
                                             final Uri imageuri = Uri.parse(addDBReceiver.image_uri);
-
-                                            Log.i("qweqwertyui", imageuri.getPath() + "   " + addDBReceiver.name + "   " + addDBReceiver.phone + "   " + addDBReceiver.flat_no + "   " + addDBReceiver.locality + "   " + addDBReceiver.city + "   " + addDBReceiver.state + "   " + addDBReceiver.country + "   " + addDBReceiver.pincode + "   " + orders.getOrder_no() + "   " + cat);
-                                            mnetworkutils.getapi().shipment(new TypedFile("image/jpeg", new File(imageuri.getPath())), addDBReceiver.name, addDBReceiver.phone, addDBReceiver.flat_no, addDBReceiver.locality, addDBReceiver.city, addDBReceiver.state, addDBReceiver.country, addDBReceiver.pincode, orders.getOrder_no(), cat, new Callback<Shipment>() {
-
-                                                @Override
-                                                public void success(Shipment shipment, Response response) {
-                                                    Log.i("adf;sdjfl;sdfaj;lkjf", shipment.getDrop_flat_no() + ", " + shipment.getDrop_locality() + shipment.getDrop_city() + ", " + shipment.getDrop_state() + ", " + shipment.getDrop_country());
-                                                    completeOrder.setDrop_address(shipment.getDrop_flat_no() + ", " + shipment.getDrop_locality() + shipment.getDrop_city() + ", " + shipment.getDrop_state() + ", " + shipment.getDrop_country());
-                                                    completeOrder.setDrop_phone(shipment.getDrop_phone());
-                                                    completeOrder.setDrop_name(shipment.getDrop_name());
-                                                    completeOrder.setDrop_pincode(shipment.getDrop_pincode());
-                                                    completeOrder.setCost(shipment.getCost());
-                                                    completeOrder.setImage_uri(imageuri.getPath());
-                                                    completeOrder.setTracking_no(shipment.getTracking_no());
-                                                    completeOrder.setCategory(shipment.getCategory());
-                                                    completeOrder.setOrder_id(orders.getOrder_no());
-                                                    if (utils.isSynced()) {
-                                                        Db_CompleteOrder DBCO = new Db_CompleteOrder();
-                                                        DBCO.AddToDB(completeOrder);
-                                                    }
-                                                    mprogress.dismiss();
-                                                    utils.setvalue("coupon_code_msg", "");
-                                                    utils.setvalue("coupon_code", "");
-                                                    Intent i = new Intent(getActivity(), Activity_ThankYou.class);
-
-                                                    if (from.equals("Y"))
-                                                        i.putExtra("PickLater", false);
-                                                    else
-                                                        i.putExtra("PickLater", true);
-
-                                                    startActivity(i);
-                                                    getActivity().overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
-                                                }
-
-                                                @Override
-                                                public void failure(RetrofitError error) {
-                                                    Log.i("adf;sdjfl;sdfaj;lkjf", error.toString());
-                                                    Toast.makeText(getActivity(), "Error Occurred. Please try again in some time.", Toast.LENGTH_LONG).show();
-                                                    mprogress.dismiss();
-                                                }
-                                            });
+                                            completeOrder.setDrop_address(addDBReceiver.flat_no + ", " + addDBReceiver.locality + addDBReceiver.city + ", " + addDBReceiver.state + ", " + addDBReceiver.country);
+                                            completeOrder.setDrop_phone(addDBReceiver.phone);
+                                            completeOrder.setDrop_name(addDBReceiver.name);
+                                            completeOrder.setDrop_pincode(addDBReceiver.pincode);
+                                            Log.i("imageuri.getPath()", jObj.getJSONArray("shipments").getJSONObject(i).getString("img"));
+                                            String imagepath=jObj.getJSONArray("shipments").getJSONObject(i).getString("img");
+                                            completeOrder.setImage_uri(imageuri.getPath());
+                                            completeOrder.setTracking_no(jObj.getJSONArray("shipments").getJSONObject(i).getString("real_tracking_no"));
+                                            completeOrder.setCategory(cat);
+                                            completeOrder.setOrder_id(jObj.getString("order_no"));
+                                            if (utils.isSynced()) {
+                                                Db_CompleteOrder DBCO = new Db_CompleteOrder();
+                                                DBCO.AddToDB(completeOrder);
+                                            }
                                         }
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
                                     }
+                                    mprogress.dismiss();
+                                    utils.setvalue("coupon_code_msg", "");
+                                    utils.setvalue("coupon_code", "");
+                                    Intent i = new Intent(getActivity(), Activity_ThankYou.class);
+                                    if (from.equals("Y"))
+                                        i.putExtra("PickLater", false);
+                                    else
+                                        i.putExtra("PickLater", true);
+                                    startActivity(i);
+                                    getActivity().overridePendingTransition(R.animator.pull_in_right, R.animator.push_out_left);
                                 }
 
                                 @Override
@@ -980,9 +1028,10 @@ public class Fragment_Orders extends Fragment {
                                     if (mprogress.isShowing()) {
                                         mprogress.dismiss();
                                     }
+                                    try {
                                     String json = new String(((TypedByteArray) error.getResponse().getBody()).getBytes());
                                     JSONObject jobj;
-                                    try {
+
                                         jobj = new JSONObject(new JSONObject(json).get("error").toString());
                                         if (jobj.getString("message") != null) {
                                             final Dialog dialog = new Dialog(getActivity());
@@ -996,15 +1045,14 @@ public class Fragment_Orders extends Fragment {
                                                 @Override
                                                 public void onClick(View v) {
                                                     dialog.dismiss();
-
                                                 }
                                             });
 
                                             Log.i("Message", jobj.getString("message"));
-                                        }else{
+                                        } else {
                                             Toast.makeText(getActivity(), "Error Occurred. Please try again in some time.", Toast.LENGTH_LONG).show();
                                         }
-                                    } catch (JSONException e) {
+                                    } catch (JSONException|NullPointerException e) {
                                         e.printStackTrace();
                                     }
 
@@ -1012,6 +1060,7 @@ public class Fragment_Orders extends Fragment {
                             });
                         }
                     });
+
                     dialog.findViewById(R.id.bChange).setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {

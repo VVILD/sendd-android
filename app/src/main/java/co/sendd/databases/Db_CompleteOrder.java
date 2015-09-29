@@ -101,7 +101,7 @@ public class Db_CompleteOrder extends Model{
                 .where("image_uri =?",Imageuri)
                 .executeSingle();
         if (completeOrderDB != null) {
-            completeOrderDB.Order_Status = "C";
+            completeOrderDB.Order_Status = Status;
             completeOrderDB.save();
             Log.i("Inside Update","Status Changed");
         }

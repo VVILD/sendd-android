@@ -172,6 +172,5 @@
         </receiver>
 
         <service android:name=".GCMClasses.GcmIntentService" />
-
     </application>
 </manifest>

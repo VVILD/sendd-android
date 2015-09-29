@@ -494,7 +494,6 @@ public class Activity_Main extends BaseActivity {
     @Override
     public void onBackPressed() {
         if (exit) {
-
             finish(); // finish activity
             Activity_Main.this.overridePendingTransition(R.animator.fade_in, R.animator.fade_out);
         } else {
@@ -574,9 +573,9 @@ public class Activity_Main extends BaseActivity {
                 InputStream is = httpEntity.getContent();
                 BufferedReader reader = new BufferedReader(new InputStreamReader(is, "iso-8859-1"), 8);
                 StringBuilder sb = new StringBuilder();
-                String line = null;
+                String line;
                 while ((line = reader.readLine()) != null) {
-                    sb.append(line + "\n");
+                    sb.append(line).append("\n");
                 }
                 is.close();
 
@@ -606,15 +605,10 @@ public class Activity_Main extends BaseActivity {
                         WebVersion = str1.split("\\.");
                         AppVersion = str2.split("\\.");
 
-                        if (Integer.parseInt(WebVersion[0]) < Integer.parseInt(AppVersion[0])) {
-
-                        } else {
-
+                        if (Integer.parseInt(WebVersion[0]) >= Integer.parseInt(AppVersion[0])) {
                             if (Integer.parseInt(WebVersion[0]) == Integer.parseInt(AppVersion[0])) {
                                 if (Integer.parseInt(WebVersion[1]) <= Integer.parseInt(AppVersion[1])) {
-                                    if (Integer.parseInt(WebVersion[2]) <= Integer.parseInt(AppVersion[2])) {
-                                        //Do Nothing :D
-                                    } else {
+                                    if (Integer.parseInt(WebVersion[2]) > Integer.parseInt(AppVersion[2])) {
                                         new AlertDialog.Builder(Activity_Main.this)
                                                 .setTitle("New Update Available")
                                                 .setCancelable(false)

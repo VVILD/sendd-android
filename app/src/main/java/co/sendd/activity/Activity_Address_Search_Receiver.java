@@ -36,7 +36,6 @@ public class Activity_Address_Search_Receiver extends BaseActivity implements Ad
     private static int checkbox_selected_index = -1;
     private ArrayList<Address> Address_list;
     private AddressList_Adapter madapter;
-    private AutoCompleteTextView addressSearch;
 
     @Override
     public void onPause() {
@@ -97,7 +96,7 @@ public class Activity_Address_Search_Receiver extends BaseActivity implements Ad
             }
         });
         //Place Suggestions Auto Complete Text View
-        addressSearch = (AutoCompleteTextView) findViewById(R.id.etactivity_address_search_receiver_SearchAddress);
+        AutoCompleteTextView addressSearch = (AutoCompleteTextView) findViewById(R.id.etactivity_address_search_receiver_SearchAddress);
         addressSearch.setAdapter(new PlacesAdapter(Activity_Address_Search_Receiver.this, R.layout.autocomplete_list));
         addressSearch.setOnItemClickListener(this);
 
@@ -277,7 +276,8 @@ public class Activity_Address_Search_Receiver extends BaseActivity implements Ad
             }
             //setup list objects
             addresslist_holder.name.setText(address_list.get(position).getName());
-            addresslist_holder.address.setText(address_list.get(position).getFlat_no() + ", " + address_list.get(position).getLocality() + address_list.get(position).getCity() + ", " + address_list.get(position).getState());
+            String Address = address_list.get(position).getFlat_no() + ", " + address_list.get(position).getLocality() + address_list.get(position).getCity() + ", " + address_list.get(position).getState() ;
+            addresslist_holder.address.setText(Address);
             if (Activity_Address_Search_Receiver.checkbox_selected_index == position) {
                 addresslist_holder.tickmark.setChecked(true);
             } else {
