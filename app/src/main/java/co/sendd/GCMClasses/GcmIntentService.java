@@ -34,22 +34,24 @@ public class GcmIntentService extends IntentService {
         Bundle extras = intent.getExtras();
         GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(this);
         String messageType = gcm.getMessageType(intent);
-        if (!extras.isEmpty()) {
-            if (GoogleCloudMessaging.
-                    MESSAGE_TYPE_MESSAGE.equals(messageType)) {
-                Log.i("Notification added", "Notification added");
-                if (extras.getString("tracking_no") != null) {
-                    sendNotification(extras.getString("message"), extras.getString("tracking_no"), extras.getString("url"), extras.getString("title"));
-                } else if (extras.getString("message") != null) {
-                    co.sendd.gettersandsetters.Notification notif = new co.sendd.gettersandsetters.Notification();
-                    notif.setMessage(extras.getString("message"));
-                    notif.setTitle(extras.getString("title"));
-                    Db_Notifications notif_db = new Db_Notifications();
-                    notif_db.AddToDB(notif);
-                    sendNotification(extras.getString("message"), "", "", extras.getString("title"));
+        if(extras != null) {
+            if (!extras.isEmpty()) {
+                if (GoogleCloudMessaging.
+                        MESSAGE_TYPE_MESSAGE.equals(messageType)) {
+                    Log.i("Notification added", "Notification added");
+                    if (extras.getString("tracking_no") != null) {
+                        sendNotification(extras.getString("message"), extras.getString("tracking_no"), extras.getString("url"), extras.getString("title"));
+                    } else if (extras.getString("message") != null) {
+                        co.sendd.gettersandsetters.Notification notif = new co.sendd.gettersandsetters.Notification();
+                        notif.setMessage(extras.getString("message"));
+                        notif.setTitle(extras.getString("title"));
+                        Db_Notifications notif_db = new Db_Notifications();
+                        notif_db.AddToDB(notif);
+                        sendNotification(extras.getString("message"), "", "", extras.getString("title"));
+                    }
+                    screenOn.acquire();
+                    screenOn.release();
                 }
-                screenOn.acquire();
-                screenOn.release();
             }
         }
     }

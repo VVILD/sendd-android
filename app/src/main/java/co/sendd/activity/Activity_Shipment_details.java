@@ -40,9 +40,6 @@ import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 
-/**
- * Created by harshkaranpuria on 3/28/15.
- */
 public class Activity_Shipment_details extends BaseActivity {
 
     TextView Name, Address, Time, Bill;
@@ -86,8 +83,7 @@ public class Activity_Shipment_details extends BaseActivity {
                 .cacheOnDisk(true)
                 .build();
         ImageLoaderConfiguration config = new ImageLoaderConfiguration.Builder(this).defaultDisplayImageOptions(defaultOptions).build();
-        if (ImageLoader.getInstance() == null)
-            ImageLoader.getInstance().init(config);
+        ImageLoader.getInstance().init(config);
         Name = (TextView) findViewById(R.id.tvName);
         Address = (TextView) findViewById(R.id.tvAddress);
         Time = (TextView) findViewById(R.id.tvTime);

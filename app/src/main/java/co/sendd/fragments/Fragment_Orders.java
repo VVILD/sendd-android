@@ -917,6 +917,7 @@ public class Fragment_Orders extends Fragment {
                                         cat = "P";
                                         break;
                                 }
+
                                 Drop_address drop_address = new Drop_address();
                                 drop_address.setFlat_no(addDBReceiver.flat_no);
                                 drop_address.setPincode(addDBReceiver.pincode);
@@ -964,7 +965,7 @@ public class Fragment_Orders extends Fragment {
                                     }
                                     SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
                                     String result = sb.toString();
-                                    Log.i("result",result);
+                                    Log.i("result", result);
                                     try {
                                         JSONObject jObj = new JSONObject(result);
                                         completeOrder.setPickup_address(utils.getvalue("PickupAddress"));
@@ -998,7 +999,7 @@ public class Fragment_Orders extends Fragment {
                                             completeOrder.setDrop_name(addDBReceiver.name);
                                             completeOrder.setDrop_pincode(addDBReceiver.pincode);
                                             Log.i("imageuri.getPath()", jObj.getJSONArray("shipments").getJSONObject(i).getString("img"));
-                                            String imagepath=jObj.getJSONArray("shipments").getJSONObject(i).getString("img");
+                                            String imagepath = jObj.getJSONArray("shipments").getJSONObject(i).getString("img");
                                             completeOrder.setImage_uri(imageuri.getPath());
                                             completeOrder.setTracking_no(jObj.getJSONArray("shipments").getJSONObject(i).getString("real_tracking_no"));
                                             completeOrder.setCategory(cat);
@@ -1029,8 +1030,10 @@ public class Fragment_Orders extends Fragment {
                                         mprogress.dismiss();
                                     }
                                     try {
-                                    String json = new String(((TypedByteArray) error.getResponse().getBody()).getBytes());
-                                    JSONObject jobj;
+
+                                        String json = new String(((TypedByteArray) error.getResponse().getBody()).getBytes());
+                                        Log.i("error", json);
+                                        JSONObject jobj;
 
                                         jobj = new JSONObject(new JSONObject(json).get("error").toString());
                                         if (jobj.getString("message") != null) {
@@ -1052,7 +1055,7 @@ public class Fragment_Orders extends Fragment {
                                         } else {
                                             Toast.makeText(getActivity(), "Error Occurred. Please try again in some time.", Toast.LENGTH_LONG).show();
                                         }
-                                    } catch (JSONException|NullPointerException e) {
+                                    } catch (JSONException | NullPointerException e) {
                                         e.printStackTrace();
                                     }
 

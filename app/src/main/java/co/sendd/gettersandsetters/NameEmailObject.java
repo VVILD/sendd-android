@@ -5,6 +5,8 @@ package co.sendd.gettersandsetters;
  */
 public class NameEmailObject {
     private String name;
+    private String email;
+    private String user;
 
     public String getName() {
         return name;
@@ -30,6 +32,4 @@ public class NameEmailObject {
         this.user = user;
     }
 
-    private String email;
-    private String user;
 }

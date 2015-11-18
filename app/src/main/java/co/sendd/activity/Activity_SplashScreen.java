@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 
+import com.appsflyer.AppsFlyerLib;
+
 import co.sendd.R;
 import co.sendd.helper.Utils;
 
@@ -17,7 +19,8 @@ public  class Activity_SplashScreen extends Activity {
     protected  void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash_screen);
-
+        AppsFlyerLib.setAppsFlyerKey("vtZdaj5bzy69VaefYrkeC9");
+        AppsFlyerLib.sendTracking(getApplicationContext());
         handler = new Handler(new Handler.Callback() {
             @Override
             public boolean handleMessage(Message msg) {
